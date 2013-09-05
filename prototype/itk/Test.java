@@ -18,6 +18,8 @@
  */
 package itk;
 
+import javax.swing.*;
+
 
 /**
  * Test class
@@ -31,9 +33,16 @@ public class Test
      */
     public static void main(final String... args)
     {
-	final Window window = new Window();
-	window.setTitle("ITK test");
-	window.setVisible(true);
+	SwingUtilities.invokeLater(new Runnable()
+	    {
+		@Override
+		public void run()
+		{
+		    final Window window = new Window();
+		    window.setTitle("ITK test");
+		    window.setVisible(true);
+		}
+	    });
     }
     
 }

@@ -18,10 +18,8 @@
  */
 package itk;
 
-import javax.swing.JFrame;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 
 
 /**
@@ -34,16 +32,20 @@ public class Window
      */
     public Window()
     {
-	this.window = new JFrame()
+	this.window = new JFrame();
+	
+	this.window.setLayout(new BorderLayout());
+	this.window.add(new Panel()
 	    {
 		@Override
 		public void paint(final Graphics g)
 		{
 		    Window.this.paint((Graphics2D)g);
 		}
-	    };
+	    }, BorderLayout.CENTER);
 	
-	this.window.setSize(new Dimension(1 << 13, 1 << 13));
+	this.window.setSize(new Dimension(800, 600));
+	this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
     
@@ -105,6 +107,8 @@ public class Window
      */
     protected void paint(final Graphics2D g)
     {
+	g.setColor(new Color(211, 211, 211));
+	g.fillRect(0, 0, 800, 600);
     }
     
 }
