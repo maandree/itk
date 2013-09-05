@@ -6,7 +6,7 @@ class:
 
 jar: class
 	mkdir -p bin
-	jar cfm bin/prototype.jar META-INF/MANIFEST.MF $(shell find obj | grep '\.class$$' | sed -e 's:^obj/:-C obj :g')
+	jar cfm bin/prototype.jar META-INF/MANIFEST.MF $(shell find obj | grep '\.class$$' | sed -e 's:^obj/:-C obj :g' | sed -e 's:\$$:"\$$":g')
 
 clean:
 	-rm -r obj bin

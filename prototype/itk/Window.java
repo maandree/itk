@@ -18,7 +18,10 @@
  */
 package itk;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
 
 
 /**
@@ -31,7 +34,16 @@ public class Window
      */
     public Window()
     {
-	this.window = new JFrame();
+	this.window = new JFrame()
+	    {
+		@Override
+		public void paint(final Graphics g)
+		{
+		    Window.this.paint((Graphics2D)g);
+		}
+	    };
+	
+	this.window.setSize(new Dimension(1 << 13, 1 << 13));
     }
     
     
@@ -82,6 +94,17 @@ public class Window
     public boolean isVisible()
     {
 	return this.window.isVisible();
+    }
+    
+    
+    
+    /**
+     * Repaint the window
+     * 
+     * @parma  g  The object with which to paint
+     */
+    protected void paint(final Graphics2D g)
+    {
     }
     
 }
