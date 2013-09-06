@@ -40,23 +40,38 @@ public class Test
 		public void run()
 		{
 		    final Component blue = new Component("Blue component");
-		    blue.backgroundColour = Color.BLUE;
+		    blue.backgroundColour = new Color(0, 0, 188);
 		    blue.preferredSize = new Dimension(36, 36);
 		    blue.constraints = DockLayout.TOP;
 		    
 		    final Component red = new Component("Red component");
-		    red.backgroundColour = Color.RED;
+		    red.backgroundColour = new Color(188, 0, 0);
 		    red.preferredSize = new Dimension(16, 16);
 		    red.constraints = DockLayout.BOTTOM;
+		    
+		    final Button button = new Button("Top button component");
+		    button.text = "Hello world";
+		    button.backgroundColour = new Color(0, 188, 0);
+		    button.foregroundColour = new Color(255, 67, 255);
+		    button.constraints = DockLayout.TOP;
+		    
+		    final Button centre = new Button("Centre component");
+		    centre.text = "Centre\nCentre";
+		    centre.backgroundColour = new Color(0, 188, 0);
+		    centre.foregroundColour = new Color(255, 67, 255);
+		    button.preferredSize = button.calculateSize(16, 16);
+		    centre.constraints = DockLayout.CENTER;
 		    
 		    final Window window = new Window("Test window");
 		    window.layoutManager = new DockLayout(window);
 		    window.children.add(blue);
 		    window.children.add(red);
 		    window.children.add(button);
+		    window.children.add(centre);
 		    blue.parent = window;
 		    red.parent = window;
 		    button.parent = button;
+		    centre.parent = button;
 		    window.setTitle("ITK test");
 		    window.setVisible(true);
 		}
