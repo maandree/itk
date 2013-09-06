@@ -39,11 +39,16 @@ public class Test
 		@Override
 		public void run()
 		{
-		    final Component component = new Component("Red component");
-		    component.backgroundColour = Color.RED;
+		    final Component blue = new Component("Blue component");
+		    blue.backgroundColour = Color.BLUE;
+		    blue.size = new Dimension(32, 32);
+		    
+		    final Component red = new Component("Red component");
+		    red.backgroundColour = Color.RED;
 		    
 		    final Window window = new Window("Test window");
-		    window.children.add(window.visibleChild = component);
+		    window.children.add(blue);
+		    window.children.add(red);
 		    window.setTitle("ITK test");
 		    window.setVisible(true);
 		}

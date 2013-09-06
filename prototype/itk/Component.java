@@ -77,14 +77,14 @@ public class Component
     public Component parent = null;
     
     /**
-     * The currently visible child
-     */
-    public Component visibleChild = null;
-    
-    /**
      * The components childred
      */
     public ArrayList<Component> children = new ArrayList<Component>();
+    
+    /**
+     * Layout constraints
+     */
+    public Object constraints;
     
     
     
@@ -108,8 +108,12 @@ public class Component
      */
     protected void printChildren(final Graphics2D g)
     {
-	if (this.visibleChild != null)
-	    this.visibleChild.paint(g);
+	for (final Component child : children)
+	{
+	    final Rectangle rect = this.locateChild(child);
+	    if (rect != null)
+		child.paint((Graphics2D)(g.create(rect.x, rect.y, rect.width, rect.height)));
+	}
     }
     
     
@@ -140,6 +144,8 @@ public class Component
 	    return null;
 	
 	final Rectangle rect = this.locateChild(child);
+	if (rect == null)
+	    return null;
 	g.clip(rect);
 	g.translate(-rect.x, -rect.y);
 	return g;
