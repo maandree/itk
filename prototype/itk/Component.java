@@ -84,7 +84,12 @@ public class Component
     /**
      * Layout constraints
      */
-    public Object constraints;
+    public Object constraints = null;
+    
+    /**
+     * The component's layout manager
+     */
+    public LayoutManager layoutManager = null;
     
     
     
@@ -108,11 +113,25 @@ public class Component
      */
     protected void printChildren(final Graphics2D g)
     {
-	for (final Component child : children)
+	if (this.layoutManager != null)
+	    this.layoutManager.prepare();
+	try
 	{
-	    final Rectangle rect = this.locateChild(child);
-	    if (rect != null)
-		child.paint((Graphics2D)(g.create(rect.x, rect.y, rect.width, rect.height)));
+	    for (final Component child : children)
+	    {
+		final Rectangle rect = this.locateChild(child);
+		if (rect != null)
+		{
+		    final int x = rect.x, width  = rect.width;
+		    final int y = rect.y, height = rect.height;
+		    child.paint((Graphics2D)(g.create(x, y, width, height)));
+		}
+	    }
+	}
+	finally
+	{
+	    if (this.layoutManager != null)
+		this.layoutManager.done();
 	}
     }
     
@@ -153,13 +172,16 @@ public class Component
     
     
     /**
-     * Locates the positions of the corners os a child
+     * Locates the positions of the corners of a child
      * 
      * @param   child  The child
      * @return         The rectangle the child is confound in
      */
     public Rectangle locateChild(final Component child)
     {
+	if (this.layoutManager != null)
+	    return this.layoutManager.locate(child);
+	
 	int x = 0, y = 0;
 	if ((child.constraints != null) && (child.constraints instanceof Point))
 	{
