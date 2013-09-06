@@ -49,11 +49,19 @@ public class Test
 		    red.preferredSize = new Dimension(16, 16);
 		    red.constraints = DockLayout.BOTTOM;
 		    
+		    final ToggleButton toggle = new ToggleButton("Toggle button component");
+		    toggle.text = "Toggle";
+		    toggle.backgroundColour = new Color(188, 188, 0);
+		    toggle.foregroundColour = new Color(67, 67, 255);
+		    toggle.constraints = DockLayout.LEFT;
+		    toggle.preferredSize = toggle.calculateSize(0, 0);
+		    toggle.pressed = true;
+		    
 		    final Label label = new Label("Label component");
 		    label.text = "Hello world";
 		    label.backgroundColour = new Color(0, 188, 0);
 		    label.foregroundColour = new Color(255, 67, 255);
-		    label.preferredSize = label.calculateSize(16, 16);
+		    label.preferredSize = label.calculateSize(8, 8);
 		    label.constraints = DockLayout.TOP;
 		    
 		    final Button button = new Button("Centre component");
@@ -66,10 +74,12 @@ public class Test
 		    window.layoutManager = new DockLayout(window);
 		    window.children.add(blue);
 		    window.children.add(red);
+		    window.children.add(toggle);
 		    window.children.add(label);
 		    window.children.add(button);
 		    blue.parent = window;
 		    red.parent = window;
+		    toggle.parent = window;
 		    label.parent = window;
 		    button.parent = window;
 		    window.setTitle("ITK test");
