@@ -126,7 +126,7 @@ public class Component
 	if (g == null)
 	    return null;
 	
-	final Rectable rect = this.locateChild(child);
+	final Rectangle rect = this.locateChild(child);
 	g.clip(rect);
 	g.translate(-rect.x, -rect.y);
 	return g;

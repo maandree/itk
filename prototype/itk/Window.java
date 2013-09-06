@@ -109,7 +109,7 @@ public class Window extends Component
     @Override
     public void sync()
     {
-	this.paint(this.window.getGraphics());
+	this.paint((Graphics2D)(this.window.getGraphics()));
     }
     
     /**
@@ -121,8 +121,8 @@ public class Window extends Component
     @Override
     protected Graphics2D sync(final Component child)
     {
-	final Graphics2D g = this.window.getGraphics();
-	final Rectable rect = this.locateChild(child);
+	final Graphics2D g = (Graphics2D)(this.window.getGraphics());
+	final Rectangle rect = this.locateChild(child);
 	g.clip(rect);
 	g.translate(-rect.x, -rect.y);
 	return g;
