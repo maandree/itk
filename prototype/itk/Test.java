@@ -49,29 +49,29 @@ public class Test
 		    red.preferredSize = new Dimension(16, 16);
 		    red.constraints = DockLayout.BOTTOM;
 		    
-		    final Button button = new Button("Top button component");
-		    button.text = "Hello world";
+		    final Label label = new Label("Label component");
+		    label.text = "Hello world";
+		    label.backgroundColour = new Color(0, 188, 0);
+		    label.foregroundColour = new Color(255, 67, 255);
+		    label.preferredSize = label.calculateSize(16, 16);
+		    label.constraints = DockLayout.TOP;
+		    
+		    final Button button = new Button("Centre component");
+		    button.text = "Centre\nCentre";
 		    button.backgroundColour = new Color(0, 188, 0);
 		    button.foregroundColour = new Color(255, 67, 255);
-		    button.constraints = DockLayout.TOP;
-		    
-		    final Button centre = new Button("Centre component");
-		    centre.text = "Centre\nCentre";
-		    centre.backgroundColour = new Color(0, 188, 0);
-		    centre.foregroundColour = new Color(255, 67, 255);
-		    button.preferredSize = button.calculateSize(16, 16);
-		    centre.constraints = DockLayout.CENTER;
+		    button.constraints = DockLayout.CENTER;
 		    
 		    final Window window = new Window("Test window");
 		    window.layoutManager = new DockLayout(window);
 		    window.children.add(blue);
 		    window.children.add(red);
+		    window.children.add(label);
 		    window.children.add(button);
-		    window.children.add(centre);
 		    blue.parent = window;
 		    red.parent = window;
-		    button.parent = button;
-		    centre.parent = button;
+		    label.parent = window;
+		    button.parent = window;
 		    window.setTitle("ITK test");
 		    window.setVisible(true);
 		}

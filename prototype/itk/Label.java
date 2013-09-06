@@ -22,9 +22,9 @@ import java.awt.*;
 
 
 /**
- * Button component class
+ * Label component class
  */
-public class Button extends Component
+public class Label extends Component
 {
     /**
      * The default foreground colour
@@ -38,7 +38,7 @@ public class Button extends Component
      * 
      * @param  name  The name of the component
      */
-    public Button(final String name)
+    public Label(final String name)
     {
 	super(name);
     }
@@ -46,7 +46,7 @@ public class Button extends Component
     
     
     /**
-     * The button's text
+     * The label's text
      */
     public String text = null;
     
@@ -69,19 +69,8 @@ public class Button extends Component
      */
     protected void paint(final Graphics2D g)
     {
-	int x = this.size.width - 1;
-	int y = this.size.height - 1;
-	
 	g.setColor(this.backgroundColour);
-	g.fillRect(0, 0, x + 1, y + 1);
-	
-	g.setColor(this.backgroundColour.brighter());
-	g.drawLine(0, 0, x, 0);
-	g.drawLine(0, 0, 0, y);
-	
-	g.setColor(this.backgroundColour.darker());
-	g.drawLine(x, y, 1, y);
-	g.drawLine(x, y, x, 1);
+	g.fillRect(0, 0, this.size.width, this.size.height);
 	
 	if (this.text != null)
 	{
@@ -92,8 +81,8 @@ public class Button extends Component
 	    int index = 0;
 	    for (final String line : lines)
 	    {
-		x = (this.size.width - metrics.stringWidth(line)) / 2;
-		y = (this.size.height - metrics.getHeight() * lines.length) / 2;
+		int x = (this.size.width - metrics.stringWidth(line)) / 2;
+		int y = (this.size.height - metrics.getHeight() * lines.length) / 2;
 		g.drawString(line, x, y + metrics.getAscent() + index * metrics.getHeight());
 		index++;
 	    }
