@@ -45,6 +45,7 @@ public class Test
 		    
 		    final Component red = new Component("Red component");
 		    red.backgroundColour = Color.RED;
+		    red.constraints = new Point(8, 8);
 		    
 		    final Window window = new Window("Test window");
 		    window.children.add(blue);
