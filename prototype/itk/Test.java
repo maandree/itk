@@ -18,6 +18,7 @@
  */
 package itk;
 
+import java.awt.*;
 import javax.swing.*;
 
 
@@ -38,7 +39,11 @@ public class Test
 		@Override
 		public void run()
 		{
+		    final Component component = new Component("Red component");
+		    component.backgroundColour = Color.RED;
+		    
 		    final Window window = new Window("Test window");
+		    window.children.add(window.visibleChild = component);
 		    window.setTitle("ITK test");
 		    window.setVisible(true);
 		}

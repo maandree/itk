@@ -19,6 +19,7 @@
 package itk;
 
 import java.awt.*;
+import java.util.*;
 
 
 /**
@@ -75,6 +76,16 @@ public class Component
      */
     public Component parent = null;
     
+    /**
+     * The currently visible child
+     */
+    public Component visibleChild = null;
+    
+    /**
+     * The components childred
+     */
+    public ArrayList<Component> children = new ArrayList<Component>();
+    
     
     
     /**
@@ -97,6 +108,8 @@ public class Component
      */
     protected void printChildren(final Graphics2D g)
     {
+	if (this.visibleChild != null)
+	    this.visibleChild.paint(g);
     }
     
     
