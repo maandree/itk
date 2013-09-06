@@ -44,6 +44,7 @@ public class Window
 		}
 	    }, BorderLayout.CENTER);
 	
+	this.window.setBackground(Color.BLACK);
 	this.window.setSize(new Dimension(800, 600));
 	this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
