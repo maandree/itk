@@ -41,13 +41,16 @@ public class Test
 		{
 		    final Component blue = new Component("Blue component");
 		    blue.backgroundColour = Color.BLUE;
-		    blue.size = new Dimension(32, 32);
+		    blue.preferredSize = new Dimension(36, 36);
+		    blue.constraints = DockLayout.TOP;
 		    
 		    final Component red = new Component("Red component");
 		    red.backgroundColour = Color.RED;
-		    red.constraints = new Point(8, 8);
+		    red.preferredSize = new Dimension(16, 16);
+		    red.constraints = DockLayout.BOTTOM;
 		    
 		    final Window window = new Window("Test window");
+		    window.layoutManager = new DockLayout(window);
 		    window.children.add(blue);
 		    window.children.add(red);
 		    window.setTitle("ITK test");

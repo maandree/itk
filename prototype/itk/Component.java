@@ -62,9 +62,14 @@ public class Component
     public Dimension minimumSize = null;
     
     /**
+     * The component's preferred size
+     */
+    public Dimension preferredSize = new Dimension(16, 16);
+    
+    /**
      * The component's size
      */
-    public Dimension size = new Dimension(16, 16);
+    public Dimension size = this.preferredSize;
     
     /**
      * The component's maximum size

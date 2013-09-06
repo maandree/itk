@@ -36,6 +36,7 @@ public class Window extends Component
     {
 	super(name);
 	this.window = new JFrame();
+	this.window.pack();
 	
 	this.window.setLayout(new BorderLayout());
 	this.window.add(new java.awt.Panel()
@@ -48,7 +49,9 @@ public class Window extends Component
 	    }, BorderLayout.CENTER);
 	
 	this.window.setBackground(Color.BLACK);
-	this.window.setSize(this.size = new Dimension(800, 600));
+	this.size = new Dimension(800, 600);
+	final Insets in = this.window.getInsets();
+	this.window.setSize(new Dimension(in.left + 800 + in.right, in.top + 600 + in.bottom));
 	this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
