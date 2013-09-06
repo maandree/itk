@@ -38,7 +38,7 @@ public class Test
 		@Override
 		public void run()
 		{
-		    final Window window = new Window();
+		    final Window window = new Window("Test window");
 		    window.setTitle("ITK test");
 		    window.setVisible(true);
 		}

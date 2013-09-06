@@ -25,17 +25,20 @@ import java.awt.*;
 /**
  * Root component in a GUI, often exclusively controlled by the window manager.
  */
-public class Window
+public class Window extends Component
 {
     /**
      * Constructor
+     * 
+     * @param  name  The name of the component
      */
-    public Window()
+    public Window(final String name)
     {
+	super(name);
 	this.window = new JFrame();
 	
 	this.window.setLayout(new BorderLayout());
-	this.window.add(new Panel()
+	this.window.add(new java.awt.Panel()
 	    {
 		@Override
 		public void paint(final Graphics g)
@@ -45,7 +48,7 @@ public class Window
 	    }, BorderLayout.CENTER);
 	
 	this.window.setBackground(Color.BLACK);
-	this.window.setSize(new Dimension(800, 600));
+	this.window.setSize(this.size = new Dimension(800, 600));
 	this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
@@ -97,19 +100,6 @@ public class Window
     public boolean isVisible()
     {
 	return this.window.isVisible();
-    }
-    
-    
-    
-    /**
-     * Repaint the window
-     * 
-     * @parma  g  The object with which to paint
-     */
-    protected void paint(final Graphics2D g)
-    {
-	g.setColor(new Color(211, 211, 211));
-	g.fillRect(0, 0, 800, 600);
     }
     
 }
