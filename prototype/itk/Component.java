@@ -57,7 +57,7 @@ public class Component
     public Color backgroundColour = DEFAULT_BACKGROUND_COLOUR;
     
     /**
-     * The component's minimum size
+     * The component's advisory minimum size
      */
     public Dimension minimumSize = null;
     
@@ -72,7 +72,7 @@ public class Component
     public Dimension size = this.preferredSize;
     
     /**
-     * The component's maximum size
+     * The component's advisory maximum size
      */
     public Dimension maximumSize = null;
     

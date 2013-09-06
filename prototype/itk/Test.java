@@ -53,6 +53,10 @@ public class Test
 		    window.layoutManager = new DockLayout(window);
 		    window.children.add(blue);
 		    window.children.add(red);
+		    window.children.add(button);
+		    blue.parent = window;
+		    red.parent = window;
+		    button.parent = button;
 		    window.setTitle("ITK test");
 		    window.setVisible(true);
 		}
