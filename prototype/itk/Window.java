@@ -102,5 +102,31 @@ public class Window extends Component
 	return this.window.isVisible();
     }
     
+    
+    /**
+     * Synchronises the graphics
+     */
+    @Override
+    public void sync()
+    {
+	this.paint(this.window.getGraphics());
+    }
+    
+    /**
+     * Synchronises the graphics on a child
+     * 
+     * @param   child  The child
+     * @return         The object with which to paint
+     */
+    @Override
+    protected Graphics2D sync(final Component child)
+    {
+	final Graphics2D g = this.window.getGraphics();
+	final Rectable rect = this.locateChild(child);
+	g.clip(rect);
+	g.translate(-rect.x, -rect.y);
+	return g;
+    }
+    
 }
 

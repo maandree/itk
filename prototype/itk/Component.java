@@ -58,29 +58,90 @@ public class Component
     /**
      * The component's minimum size
      */
-    public Dimension minimumSize;
+    public Dimension minimumSize = null;
     
     /**
      * The component's size
      */
-    public Dimension size;
+    public Dimension size = new Dimension(16, 16);
     
     /**
      * The component's maximum size
      */
-    public Dimension maximumSize;
+    public Dimension maximumSize = null;
+    
+    /**
+     * The components's parent
+     */
+    public Component parent = null;
     
     
     
     /**
-     * Repaint the window
+     * Repaint the component
      * 
-     * @parma  g  The object with which to paint
+     * @param  g  The object with which to paint
      */
     protected void paint(final Graphics2D g)
     {
 	g.setColor(this.backgroundColour);
 	g.fillRect(0, 0, this.size.width, this.size.height);
+	
+	this.printChildren(g);
+    }
+    
+    /**
+     * Repaint the component's children
+     * 
+     * @param  g  The object with which to paint
+     */
+    protected void printChildren(final Graphics2D g)
+    {
+    }
+    
+    
+    /**
+     * Synchronises the graphics
+     */
+    public void sync()
+    {
+	final Graphics2D g;
+	if (this.parent != null)
+	    if ((g = this.parent.sync(this)) != null)
+		this.paint(g);
+    }
+    
+    /**
+     * Synchronises the graphics on a child
+     * 
+     * @param   child  The child
+     * @return         The object with which to paint
+     */
+    protected Graphics2D sync(final Component child)
+    {
+	if (this.parent == null)
+	    return null;
+	
+	final Graphics2D g = this.parent.sync(this);
+	if (g == null)
+	    return null;
+	
+	final Rectable rect = this.locateChild(child);
+	g.clip(rect);
+	g.translate(-rect.x, -rect.y);
+	return g;
+    }
+    
+    
+    /**
+     * Locates the positions of the corners os a child
+     * 
+     * @param   child  The child
+     * @return         The rectangle the child is confound in
+     */
+    public Rectangle locateChild(final Component child)
+    {
+	return new Rectangle(0, 0, this.size.width, this.size.height);
     }
     
 }
