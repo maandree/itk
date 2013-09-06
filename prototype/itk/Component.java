@@ -160,7 +160,13 @@ public class Component
      */
     public Rectangle locateChild(final Component child)
     {
-	return new Rectangle(0, 0, this.size.width, this.size.height);
+	int x = 0, y = 0;
+	if ((child.constraints != null) && (child.constraints instanceof Point))
+	{
+	    x = ((Point)(child.constraints)).x;
+	    y = ((Point)(child.constraints)).y;
+	}
+	return new Rectangle(x, y, child.width, child.height);
     }
     
 }
