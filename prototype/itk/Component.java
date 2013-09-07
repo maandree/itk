@@ -196,5 +196,15 @@ public class Component
 	return new Rectangle(x, y, child.size.width, child.size.height);
     }
     
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+	return this.name;
+    }
+    
 }
 

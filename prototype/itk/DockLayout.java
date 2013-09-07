@@ -79,6 +79,20 @@ public class DockLayout implements LayoutManager
     
     
     /**
+     * Creates a complexer layout constraint that yeilds for later docked components
+     * 
+     * @param   anticlockwise  The number of components for which to yeild, that are position at the edge the 90° anticlockwise position
+     * @param   edge           The edge to which to dock
+     * @param   clockwise      The number of components for which to yeild, that are position at the edge the 90° clockwise position
+     * @return                 
+     */
+    public static String yeild(final int anticlockwise, final String edge, final int clockwise)
+    {
+	return Integer.toString(anticlockwise) + " " + edge + " " + Integer.toString(clockwise);
+    }
+    
+    
+    /**
      * Null out if area is zero
      * 
      * @param   area  The area
@@ -100,40 +114,138 @@ public class DockLayout implements LayoutManager
 	int w = this.container.size.width;
 	int h = this.container.size.height;
 	
+	final ArrayList<Component> yeildLeft   = new ArrayList<Component>();
+	final ArrayList<Component> yeildTop    = new ArrayList<Component>();
+	final ArrayList<Component> yeildRight  = new ArrayList<Component>();
+	final ArrayList<Component> yeildBottom = new ArrayList<Component>();
+	
 	for (final Component child : this.container.children)
 	{
 	    final Object constraints = child.constraints;
 	    if ((constraints != null) && (constraints instanceof String))
 	    {
 		final String c = (String)constraints;
-		if (c.equals(LEFT))
+		Rectangle r;
+		if (c.contains(LEFT))
 		{
-		    int _ = Math.min(w, child.preferredSize.width);
-		    this.prepared.put(child, nonzero(new Rectangle(x, y, _, h)));
+		    int _ = Math.min(w, child.preferredSize.width), H = h, Y = y;
+		    while ((yeildLeft.size() > 0) && (_ > 0))
+		    {
+			final Component yeilded = yeildLeft.remove(0);
+			if ((r = this.prepared.get(yeilded)) != null)
+			{
+			    int yx = r.x, yy = r.y, yw = r.width, yh = r.height;
+			    r = nonzero(new Rectangle(yx + _, yy, yw - _, yh));
+			    this.prepared.put(yeilded, r);
+			    H += yh;
+			    if (yeilded.constraints.toString().contains(TOP))
+				Y -= yh;
+			}
+		    }
+		    this.prepared.put(child, r = nonzero(new Rectangle(x, Y, _, H)));
 		    x += _;
 		    w -= _;
+		    if ((c.equals(LEFT) == false) && (r != null))
+		    {
+			final String[] words = c.split(" ");
+			final int bottom = Integer.parseInt(words[0]);
+			final int top = Integer.parseInt(words[2]);
+			for (_ = 0; _ < bottom; _++)
+			    yeildBottom.add(child);
+			for (_ = 0; _ < top; _++)
+			    yeildTop.add(child);
+		    }
 		    continue;
 		}
-		if (c.equals(TOP))
+		if (c.contains(TOP))
 		{
-		    int _ = Math.min(h, child.preferredSize.height);
-		    this.prepared.put(child, nonzero(new Rectangle(x, y, w, _)));
+		    int _ = Math.min(h, child.preferredSize.height), W = w, X = x;
+		    while ((yeildTop.size() > 0) && (_ > 0))
+		    {
+			final Component yeilded = yeildTop.remove(0);
+			if ((r = this.prepared.get(yeilded)) != null)
+			{
+			    int yx = r.x, yy = r.y, yw = r.width, yh = r.height;
+			    r = nonzero(new Rectangle(yx, yy + _, yw, yh - _));
+			    this.prepared.put(yeilded, r);
+			    W += yw;
+			    if (yeilded.constraints.toString().contains(LEFT))
+				X -= yw;
+			}
+		    }
+		    this.prepared.put(child, r = nonzero(new Rectangle(X, y, W, _)));
 		    y += _;
 		    h -= _;
+		    if ((c.equals(TOP) == false) && (r != null))
+		    {
+			final String[] words = c.split(" ");
+			final int left = Integer.parseInt(words[0]);
+			final int right = Integer.parseInt(words[2]);
+			for (_ = 0; _ < left; _++)
+			    yeildLeft.add(child);
+			for (_ = 0; _ < right; _++)
+			    yeildRight.add(child);
+		    }
 		    continue;
 		}
-		if (c.equals(RIGHT))
+		if (c.contains(RIGHT))
 		{
-		    int _ = Math.min(w, child.preferredSize.width);
-		    this.prepared.put(child, nonzero(new Rectangle(x + w - _, y, _, h)));
+		    int _ = Math.min(w, child.preferredSize.width), H = h, Y = y;
+		    while ((yeildRight.size() > 0) && (_ > 0))
+		    {
+			final Component yeilded = yeildRight.remove(0);
+			if ((r = this.prepared.get(yeilded)) != null)
+			{
+			    int yx = r.x, yy = r.y, yw = r.width, yh = r.height;
+			    r = nonzero(new Rectangle(yx, yy, yw - _, yh));
+			    this.prepared.put(yeilded, r);
+			    H += yh;
+			    if (yeilded.constraints.toString().contains(TOP))
+				Y -= yh;
+			}
+		    }
+		    this.prepared.put(child, r = nonzero(new Rectangle(x + w - _, Y, _, H)));
 		    w -= _;
+		    if ((c.equals(RIGHT) == false) && (r != null))
+		    {
+			final String[] words = c.split(" ");
+			final int top = Integer.parseInt(words[0]);
+			final int bottom = Integer.parseInt(words[2]);
+			for (_ = 0; _ < top; _++)
+			    yeildTop.add(child);
+			for (_ = 0; _ < bottom; _++)
+			    yeildBottom.add(child);
+		    }
 		    continue;
 		}
-		if (c.equals(BOTTOM))
+		if (c.contains(BOTTOM))
 		{
-		    int _ = Math.min(h, child.preferredSize.height);
-		    this.prepared.put(child, nonzero(new Rectangle(x, y + h - _, w, _)));
+		    int _ = Math.min(h, child.preferredSize.height), W = w, X = x;
+		    while ((yeildBottom.size() > 0) && (_ > 0))
+		    {
+			final Component yeilded = yeildBottom.remove(0);
+			if ((r = this.prepared.get(yeilded)) != null)
+			{
+			    int yx = r.x, yy = r.y, yw = r.width, yh = r.height;
+			    r = nonzero(new Rectangle(yx, yy, yw, yh - _));
+			    this.prepared.put(yeilded, r);
+			    W += yw;
+			    if (yeilded.constraints.toString().contains(LEFT))
+				X -= yw;
+			}
+		    }
+		    this.prepared.put(child, r = nonzero(new Rectangle(X, y + h - _, W, _)));
 		    h -= _;
+		    if ((c.equals(BOTTOM) == false) && (r != null))
+		    {
+			final String[] words = c.split(" ");
+			final int right = Integer.parseInt(words[0]);
+			final int left = Integer.parseInt(words[2]);
+			for (_ = 0; _ < right; _++)
+			    yeildRight.add(child);
+			for (_ = 0; _ < left; _++)
+			    yeildLeft.add(child);
+		    }
 		    continue;
 		}
 	    }
