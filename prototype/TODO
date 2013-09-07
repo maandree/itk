@@ -17,6 +17,7 @@ Spinner
 StatusBar
 Menu
 List
+DropdownList
 ComboBox
 ComboCheckBox
 TextField
