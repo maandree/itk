@@ -8,6 +8,7 @@ Screen, Xmonad and Terminator.
 Planned features:
 
 •  Detachable and reatachable graphics
+•  The logic part of a program is a detached process
 •  Remote display host
 •  Off-tearable menus
 •  Off-teerable and rearrangable components
