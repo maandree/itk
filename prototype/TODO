@@ -28,6 +28,7 @@ FileDialog
 MessageDialog
 ColourDialog
 Socket
+Plug
 
 TableLayout
 FlowLayout
