@@ -64,7 +64,7 @@ public class CheckBox extends Component
      */
     protected void paint(final Graphics2D g)
     {
-	int w = Math.min(Math.min(this.size.width, this.size.height), 14);
+	int w = Math.min(Math.min(this.size.width, this.size.height), 13);
 	int x = (this.size.width - w) / 2;
 	int y = (this.size.height - w) / 2;
 	
@@ -118,7 +118,7 @@ public class CheckBox extends Component
      */
     public Dimension calculateSize()
     {
-	return new Dimension(14, 14);
+	return new Dimension(13, 13);
     }
     
 }
