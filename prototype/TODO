@@ -1,0 +1,39 @@
+Frame
+PopupMenu
+ToolTip
+ToolBar
+Separator
+Viewport
+Tree
+Table
+GridPane
+TabbedPane
+SplitPane
+Slider
+ScrolledPane
+ScrollBar
+ProgressBar
+Spinner
+StatusBar
+Menu
+List
+ComboBox
+ComboCheckBox
+TextField
+TextArea
+Terminal
+PrintDialog
+PreviewDialog
+FileDialog
+MessageDialog
+ColourDialog
+Socket
+
+TableLayout
+FlowLayout
+GridLayout
+
+Text object instead of String that can have icons, formating and anything else
+Dropdown terminal
+Resource monitor
+
