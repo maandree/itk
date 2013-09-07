@@ -64,10 +64,11 @@ public class Test
 		    label.preferredSize = label.calculateSize(8, 8);
 		    label.constraints = DockLayout.TOP;
 		    
-		    final Component cyan = new Component("Blue component");
+		    final CheckBox cyan = new CheckBox("Cyan component");
 		    cyan.backgroundColour = new Color(0, 188, 188);
 		    cyan.preferredSize = new Dimension(36, 36);
 		    cyan.constraints = DockLayout.RIGHT;
+		    cyan.value = null;
 		    
 		    
 		    final Button ired1 = new Button("Inner red 1 button");

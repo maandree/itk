@@ -22,9 +22,9 @@ import java.awt.*;
 
 
 /**
- * Button component class
+ * Check box component class
  */
-public class Button extends Component
+public class CheckBox extends Component
 {
     /**
      * The default foreground colour
@@ -38,7 +38,7 @@ public class Button extends Component
      * 
      * @param  name  The name of the component
      */
-    public Button(final String name)
+    public CheckBox(final String name)
     {
 	super(name);
     }
@@ -46,19 +46,14 @@ public class Button extends Component
     
     
     /**
-     * The button's text
-     */
-    public String text = null;
-    
-    /**
      * The component's foreground colour
      */
     public Color foregroundColour = DEFAULT_FOREGROUND_COLOUR;
     
     /**
-     * The component's font
+       Whether the check box is checked
      */
-    public Font font = null;
+    public Boolean value = Boolean.FALSE;
     
     
     
@@ -69,33 +64,33 @@ public class Button extends Component
      */
     protected void paint(final Graphics2D g)
     {
-	int x = this.size.width - 1;
-	int y = this.size.height - 1;
+	int w = Math.min(Math.min(this.size.width, this.size.height), 14);
+	int x = (this.size.width - w) / 2;
+	int y = (this.size.height - w) / 2;
 	
-	g.setColor(this.backgroundColour);
-	g.fillRect(0, 0, x + 1, y + 1);
-	
-	g.setColor(this.backgroundColour.brighter());
-	g.drawLine(0, 0, x, 0);
-	g.drawLine(0, 0, 0, y);
-	
-	g.setColor(this.backgroundColour.darker());
-	g.drawLine(x, y, 1, y);
-	g.drawLine(x, y, x, 1);
-	
-	if (this.text != null)
+	g.setColor(this.foregroundColour);
+	if (this.value == null)
 	{
-	    g.setFont(this.font);
-	    g.setColor(this.foregroundColour);
-	    final FontMetrics metrics = g.getFontMetrics();
-	    final String[] lines = this.text.split("\n");
-	    int index = 0;
-	    for (final String line : lines)
+	    g.fillRect(x, y, w, w);
+	    final int re, gr, bl;
+	    re = this.backgroundColour.getRed();
+	    gr = this.backgroundColour.getGreen();
+	    bl = this.backgroundColour.getBlue();
+	    g.setColor(new Color(re, gr, bl, 128));
+	    if (w > 3)
+		g.fillRect(x + 1, y + 1, w - 2, w - 2);
+	    else
+		g.fillRect(x, y, w, w);
+	}
+	else if (this.value.booleanValue())
+	    g.fillRect(x, y, w, w);
+	else
+	{
+	    g.drawRect(x, y, w - 1, w - 1);
+	    if (w > 3)
 	    {
-		x = (this.size.width - metrics.stringWidth(line)) / 2;
-		y = (this.size.height - metrics.getHeight() * lines.length) / 2;
-		g.drawString(line, x, y + metrics.getAscent() + index * metrics.getHeight());
-		index++;
+		g.setColor(this.backgroundColour);
+		g.fillRect(x + 1, y + 1, w - 2, w - 2);
 	    }
 	}
 	
@@ -123,13 +118,7 @@ public class Button extends Component
      */
     public Dimension calculateSize()
     {
-	/* Dummy calculation! */
-	final String[] lines = this.text.split("\n");
-	int maxlen = 0;
-	for (final String line : lines)
-	    if (maxlen < line.length())
-		maxlen = line.length();
-	return new Dimension(10 * maxlen + 4, 20 * lines.length + 4);
+	return new Dimension(14, 14);
     }
     
 }

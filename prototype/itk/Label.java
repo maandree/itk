@@ -118,7 +118,7 @@ public class Label extends Component
 	for (final String line : lines)
 	    if (maxlen < line.length())
 		maxlen = line.length();
-	return new Dimension(10 * maxlen, 20 * lines.length);
+	return new Dimension(10 * maxlen + 4, 20 * lines.length + 4);
     }
     
 }
