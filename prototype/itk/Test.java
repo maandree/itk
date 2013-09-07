@@ -170,10 +170,11 @@ public class Test
 		    igreen5.preferredSize = new Dimension(24, 24);
 		    igreen5.constraints = DockLayout.BOTTOM;
 		    
-		    final Button iblue5 = new Button("Inner blue 5 button");
+		    final RadioButton iblue5 = new RadioButton("Inner blue 5 radio button");
 		    iblue5.backgroundColour = new Color(0, 0, 188);
 		    iblue5.preferredSize = new Dimension(24, 24);
 		    iblue5.constraints = DockLayout.yeild(1, DockLayout.LEFT, 1);
+		    iblue5.value = false;
 		    
 		    
 		    final Button button = new Button("Centre component");
@@ -184,6 +185,7 @@ public class Test
 		    
 		    final Component inner = new Button("Inner dock component");
 		    inner.layoutManager = new DockLayout(inner);
+		    inner.backgroundColour = new Color(188, 0, 188);
 		    inner.constraints = DockLayout.CENTER;
 		    
 		    inner.children.add(ired1);
