@@ -16,6 +16,8 @@ StatusBar
 Menu
 List
 DropdownList
+Expander
+ExpandPane
 ComboBox
 ComboCheckBox
 TextField
