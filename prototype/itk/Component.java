@@ -187,12 +187,14 @@ public class Component
 	if (this.layoutManager != null)
 	    return this.layoutManager.locate(child);
 	
-	int x = 0, y = 0;
+	int x = 0, y = 0, w = child.preferredSize.width, h = child.preferredSize.height;
 	if ((child.constraints != null) && (child.constraints instanceof Point))
 	{
 	    x = ((Point)(child.constraints)).x;
 	    y = ((Point)(child.constraints)).y;
 	}
+	
+	child.size = child.preferredSize;
 	return new Rectangle(x, y, child.preferredSize.width, child.preferredSize.height);
     }
     

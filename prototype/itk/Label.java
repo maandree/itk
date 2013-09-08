@@ -118,7 +118,41 @@ public class Label extends Component
 	for (final String line : lines)
 	    if (maxlen < line.length())
 		maxlen = line.length();
-	return new Dimension(10 * maxlen + 4, 20 * lines.length + 4);
+	return new Dimension(6 * maxlen + 8, 16 * lines.length + 8);
+    }
+    
+    
+    /**
+     * Make a silver ratioed size at least as big as a specified size
+     * 
+     * @param   mininum  The minimum dimensions
+     * @return           Silver ratio dimensions
+     */
+    public static Dimension silverRatio(final Dimension minimum)
+    {
+	final boolean vertical = minimum.height > minimum.width;
+	
+	final int mx = vertical ? minimum.height : minimum.width;
+	final int my = vertical ? minimum.width : minimum.height;
+	
+	final double mr = mx / my;
+	int n = (int)mr;
+	
+	if ((mr * 2 - n) * (mr * 2 - n) > n * n + 4)
+	    n++;
+	
+	double r, x_;
+	int x;
+	do
+	{
+	    r = (n + Math.sqrt(n * n + 4)) / 2;
+	    x_ = my * r;
+	    x = (int)(x_ + 0.5);
+	    n++;
+	}
+	  while (x < mx);
+	
+	return new Dimension(vertical ? my : x, vertical ? x : my);
     }
     
 }

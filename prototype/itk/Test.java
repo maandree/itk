@@ -236,6 +236,15 @@ public class Test
 		    button.parent = inner;
 		    
 		    
+		    final Button silver = new Button("Silver radioed floating button");
+		    silver.text = "Silver ratioed";
+		    silver.preferredSize = Button.silverRatio(silver.calculateSize());
+		    silver.constraints = new Point(16, 16);
+		    
+		    button.children.add(silver);
+		    silver.parent = button;
+		    
+		    
 		    final Window window = new Window("Test window");
 		    window.layoutManager = new DockLayout(window);
 		    window.children.add(blue);
