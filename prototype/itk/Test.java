@@ -43,6 +43,7 @@ public class Test
 		    /* blue.backgroundColour = new Color(0, 0, 188); */
 		    blue.preferredSize = new Dimension(36, 36);
 		    blue.constraints = DockLayout.TOP;
+		    blue.fractionMode = ProgressBar.BLEND;
 		    blue.value[0] = 75;
 		    
 		    final Separator vsep = new Separator("Vertical separator");

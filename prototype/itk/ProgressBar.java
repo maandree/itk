@@ -52,6 +52,7 @@ public class ProgressBar extends Component
      */
     public static final Color DEFAULT_FATAL_COLOUR = new Color(188, 0, 0);
     
+    
     /**
      * Left to right progressing progress bar
      */
@@ -82,6 +83,26 @@ public class ProgressBar extends Component
      */
     public static final int BLOCKS = 8;
     
+    
+    /**
+     * Ignore fraction pixels
+     */
+    public static final int FLOOR = 0;
+    
+    /**
+     * Treat fraction pixels as which is it is nearest of complete and not existing
+     */
+    public static final int NEAREST = 1;
+    
+    /**
+     * Treat fraction pixels as complete pixels
+     */
+    public static final int CEILING = 2;
+    
+    /**
+     * Blend colours to emulate fraction pixels (recommended for continuous progression)
+     */
+    public static final int BLEND = 3;
     
     
     
@@ -144,7 +165,29 @@ public class ProgressBar extends Component
      */
     public int[] blocks = { -8 };
     
+    /**
+     * How to paint fractional pixels
+     */
+    public int fractionMode = FLOOR;
     
+    
+    
+    /**
+     * Apply an alpha multiplier to a colour
+     * 
+     * @param   colour      The colour
+     * @param   multiplier  The multiplier
+     * @return              The colour alpha multiplied
+     */
+    private static Color alpha(final Color colour, final double multiplier)
+    {
+	final int r, g, b, a;
+	r = colour.getRed();
+	g = colour.getGreen();
+	b = colour.getBlue();
+	a = (int)(colour.getAlpha() * multiplier + 0.5);
+	return new Color(r, g, b, Math.min(Math.max(0, a), 255));
+    }
     
     /**
      * Repaint the component
@@ -188,22 +231,57 @@ public class ProgressBar extends Component
 	    /* XXX support multiple values */
 	    if (max > min)
 	    {
-		g.setColor(this.colour[i]);
+		final Color c;
+		g.setColor(c = this.colour[i]);
 		/* XXX support blocks */
-		final int v;
-		if ((orient & 3) <= RIGHT_TO_LEFT)
-		    v = Math.min(w * val / (max - min), w);
-		else
-		    v = Math.min(h * val / (max - min), h);
+		final int m = ((orient & 3) <= RIGHT_TO_LEFT) ? w : h;
+		double v_ = m * (double)val / (max - min);
+		double blend = -1;
+		if (this.fractionMode != FLOOR)
+		    if (this.fractionMode == NEAREST)
+			v_ += 0.5;
+		    else if (this.fractionMode == CEILING)
+			v_ += 1.0;
+		    else
+			blend = v_ % 1.0;
+		final int v = Math.min(Math.max(0, (int)v_), m);
 		if (v > 0)
 		    if ((orient & 3) == LEFT_TO_RIGHT)
+		    {
 			g.fillRect(1, 1, v, h);
+			if (blend > 0)
+			{
+			    g.setColor(alpha(c, blend));
+			    g.drawLine(v + 1, 1, v + 1, h);
+			}
+		    }
 		    else if ((orient & 3) == RIGHT_TO_LEFT)
+		    {
 			g.fillRect(1 + w - v, 1, v, h);
+			if (blend > 0)
+			{
+			    g.setColor(alpha(c, blend));
+			    g.drawLine(w - v, 1, w - v, h);
+			}
+		    }
 		    else if ((orient & 3) == TOP_DOWN)
+		    {
 			g.fillRect(1, 1, w, v);
+			if (blend > 0)
+			{
+			    g.setColor(alpha(c, blend));
+			    g.drawLine(1, v + 1, w, v + 1);
+			}
+		    }
 		    else if ((orient & 3) == BOTTOM_UP)
+		    {
 			g.fillRect(1, 1 + h - v, w, v);
+			if (blend > 0)
+			{
+			    g.setColor(alpha(c, blend));
+			    g.drawLine(1, h - v, w, h - v);
+			}
+		    }
 	    }
 	    else if (max < min)
 	    {
