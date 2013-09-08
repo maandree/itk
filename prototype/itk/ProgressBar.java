@@ -150,6 +150,7 @@ public class ProgressBar extends Component
      * 
      * @param  g  The object with which to paint
      */
+    @Override
     protected void paintComponent(final Graphics2D g)
     {
 	int x = this.size.width - 1;

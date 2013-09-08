@@ -62,6 +62,7 @@ public class RadioButton extends Component
      * 
      * @param  g  The object with which to paint
      */
+    @Override
     protected void paintComponent(final Graphics2D g)
     {
 	int w = (Math.min(Math.min(this.size.width, this.size.height), 13) - 1) | 1;

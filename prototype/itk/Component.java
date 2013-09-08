@@ -114,7 +114,7 @@ public class Component
      * 
      * @param  g  The object with which to paint
      */
-    protected void paint(final Graphics2D g)
+    public void paint(final Graphics2D g)
     {
 	final int w = this.size.width, h = this.size.height;
 	

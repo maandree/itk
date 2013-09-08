@@ -67,6 +67,7 @@ public class Label extends Component
      * 
      * @param  g  The object with which to paint
      */
+    @Override
     protected void paintComponent(final Graphics2D g)
     {
 	g.setColor(this.backgroundColour);
