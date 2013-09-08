@@ -108,11 +108,16 @@ public class Window extends Component
     
     /**
      * Synchronises the graphics
+     * 
+     * @param  area  Area to synchronise, {@code null} for everything
      */
     @Override
-    public void sync()
+    public void sync(final Rectangle area)
     {
-	this.paint((Graphics2D)(this.window.getGraphics()));
+	final Graphics2D g = (Graphics2D)(this.window.getGraphics());
+	if (area != null)
+	    g.clip(area);
+	this.paint(g);
     }
     
     /**
