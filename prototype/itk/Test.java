@@ -202,8 +202,14 @@ public class Test
 		    frame.container.backgroundColour = new Color(188, 188, 188);
 		    frame.container.layoutManager = new DockLayout(frame.container);
 		    (frame.label = silver).parent = frame;
-		    frame.container.children.add(button);
-		    button.parent = frame.container;
+		    (button.parent = frame.container).children.add(button);
+		    
+		    
+		    final TextField text = new TextField("Text field component");
+		    text.text = "Text";
+		    text.preferredSize = text.calculateSize();
+		    text.constraints = new Point(32, 24);
+		    (text.parent = button).children.add(text);
 		    
 		    
 		    final Component inner = new Button("Inner dock component");
@@ -211,63 +217,40 @@ public class Test
 		    inner.backgroundColour = new Color(188, 0, 188);
 		    inner.constraints = DockLayout.CENTER;
 		    
-		    inner.children.add(ired1);
-		    inner.children.add(iyellow1);
-		    inner.children.add(igreen1);
-		    inner.children.add(iblue1);
+		    (ired1.parent = inner).children.add(ired1);
+		    (iyellow1.parent = inner).children.add(iyellow1);
+		    (igreen1.parent = inner).children.add(igreen1);
+		    (iblue1.parent = inner).children.add(iblue1);
 		    
-		    inner.children.add(iyellow2);
-		    inner.children.add(igreen2);
-		    inner.children.add(iblue2);
-		    inner.children.add(ired2);
+		    (ired2.parent = inner).children.add(ired2);
+		    (iyellow2.parent = inner).children.add(iyellow2);
+		    (igreen2.parent = inner).children.add(igreen2);
+		    (iblue2.parent = inner).children.add(iblue2);
 		    
-		    inner.children.add(igreen3);
-		    inner.children.add(iblue3);
-		    inner.children.add(ired3);
-		    inner.children.add(iyellow3);
+		    (ired3.parent = inner).children.add(ired3);
+		    (iyellow3.parent = inner).children.add(iyellow3);
+		    (igreen3.parent = inner).children.add(igreen3);
+		    (iblue3.parent = inner).children.add(iblue3);
 		    
-		    inner.children.add(iblue4);
-		    inner.children.add(ired4);
-		    inner.children.add(iyellow4);
-		    inner.children.add(igreen4);
+		    (ired4.parent = inner).children.add(ired4);
+		    (iyellow4.parent = inner).children.add(iyellow4);
+		    (igreen4.parent = inner).children.add(igreen4);
+		    (iblue4.parent = inner).children.add(iblue4);
 		    
-		    inner.children.add(ired5);
-		    inner.children.add(iyellow5);
-		    inner.children.add(igreen5);
-		    inner.children.add(iblue5);
-		    
-		    inner.children.add(frame);
-		    
-		    ired1.parent = ired2.parent = ired3.parent = inner;
-		    ired4.parent = ired4.parent = inner;
-		    iyellow1.parent = iyellow2.parent = iyellow3.parent = inner;
-		    iyellow4.parent = iyellow5.parent = inner;
-		    igreen1.parent = igreen2.parent = igreen3.parent = inner;
-		    igreen4.parent = igreen5.parent = inner;
-		    iblue1.parent = iblue2.parent = iblue3.parent = inner;
-		    iblue4.parent = iblue5.parent = inner;
-		    frame.parent = inner;
+		    (frame.parent = inner).children.add(frame);
 		    
 		    
 		    final Window window = new Window("Test window");
 		    window.layoutManager = new DockLayout(window);
 		    window.isDoubleBuffered = true;
-		    window.children.add(blue);
-		    window.children.add(vsep);
-		    window.children.add(red);
-		    window.children.add(toggle);
-		    window.children.add(hsep);
-		    window.children.add(label);
-		    window.children.add(cyan);
-		    window.children.add(inner);
-		    blue.parent = window;
-		    vsep.parent = window;
-		    red.parent = window;
-		    toggle.parent = window;
-		    hsep.parent = window;
-		    label.parent = window;
-		    cyan.parent = window;
-		    inner.parent = window;
+		    (blue.parent = window).children.add(blue);
+		    (vsep.parent = window).children.add(vsep);
+		    (red.parent = window).children.add(red);
+		    (toggle.parent = window).children.add(toggle);
+		    (hsep.parent = window).children.add(hsep);
+		    (label.parent = window).children.add(label);
+		    (cyan.parent = window).children.add(cyan);
+		    (inner.parent = window).children.add(inner);
 		    window.setTitle("ITK test");
 		    window.setVisible(true);
 		}
