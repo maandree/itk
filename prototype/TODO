@@ -23,6 +23,7 @@ TextField
 TextArea
 PasswordField
 Terminal
+CurtainPane
 PrintDialog
 PreviewDialog
 FileDialog
