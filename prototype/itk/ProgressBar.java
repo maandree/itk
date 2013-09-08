@@ -35,52 +35,53 @@ public class ProgressBar extends Component
     /**
      * The default progress colour
      */
-    private static final Color DEFAULT_PROGRESS_COLOUR = new Color(0, 0, 188);
+    public static final Color DEFAULT_PROGRESS_COLOUR = new Color(0, 0, 188);
     
     /**
      * The default OK colour
      */
-    private static final Color DEFAULT_OK_COLOUR = new Color(0, 188, 0);
+    public static final Color DEFAULT_OK_COLOUR = new Color(0, 188, 0);
     
     /**
      * The default warning colour
      */
-    private static final Color DEFAULT_WARNING_COLOUR = new Color(188, 188, 0);
+    public static final Color DEFAULT_WARNING_COLOUR = new Color(188, 188, 0);
     
     /**
      * The default fatal warning colour
      */
-    private static final Color DEFAULT_FATAL_COLOUR = new Color(188, 0, 0);
+    public static final Color DEFAULT_FATAL_COLOUR = new Color(188, 0, 0);
     
     /**
      * Left to right progressing progress bar
      */
-    private static final int LEFT_TO_RIGHT = 0;
+    public static final int LEFT_TO_RIGHT = 0;
     
     /**
      * Right to left progressing progress bar
      */
-    private static final int RIGHT_TO_LEFT = 1;
+    public static final int RIGHT_TO_LEFT = 1;
     
     /**
      * Top to bottom progressing progress bar
      */
-    private static final int TOP_DOWN = 2;
+    public static final int TOP_DOWN = 2;
     
     /**
      * Bottom to top progressing progress bar
      */
-    private static final int BOTTOM_UP = 3;
+    public static final int BOTTOM_UP = 3;
     
     /**
-     * Prefer to floating progress of integer progress
+     * Prefer to floating progress of integer progress (OR to orientation)
      */
-    private static final int CONTINUOUS = 4;
+    public static final int CONTINUOUS = 4;
     
     /**
-     * Prefer blocks
+     * Prefer blocks (OR to orientation)
      */
-    private static final int BLOCKS = 8;
+    public static final int BLOCKS = 8;
+    
     
     
     
