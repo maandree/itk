@@ -77,7 +77,7 @@ public class Test
 		    label.constraints = DockLayout.TOP;
 		    
 		    final CheckBox cyan = new CheckBox("Cyan component");
-		    cyan.backgroundColour = new Color(0, 188, 188);
+		    cyan.boxBackgroundColour = new Color(0, 188, 188);
 		    cyan.preferredSize = new Dimension(36, 36);
 		    cyan.constraints = DockLayout.RIGHT;
 		    cyan.value = null;
@@ -183,7 +183,7 @@ public class Test
 		    igreen5.constraints = DockLayout.BOTTOM;
 		    
 		    final RadioButton iblue5 = new RadioButton("Inner blue 5 radio button");
-		    iblue5.backgroundColour = new Color(0, 0, 188);
+		    iblue5.boxBackgroundColour = new Color(0, 0, 188);
 		    iblue5.preferredSize = new Dimension(24, 24);
 		    iblue5.constraints = DockLayout.yeild(1, DockLayout.LEFT, 1);
 		    iblue5.value = false;

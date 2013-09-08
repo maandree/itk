@@ -27,6 +27,16 @@ import java.awt.*;
 public class RadioButton extends Component
 {
     /**
+     * The default background colour
+     */
+    private static final Color DEFAULT_BACKGROUND_COLOUR = new Color(0, 0, 0, 0);
+    
+    /**
+     * The default box background colour
+     */
+    private static final Color DEFAULT_BOX_BACKGROUND_COLOUR = Color.WHITE;;
+    
+    /**
      * The default foreground colour
      */
     private static final Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
@@ -41,6 +51,7 @@ public class RadioButton extends Component
     public RadioButton(final String name)
     {
 	super(name);
+	this.backgroundColour = DEFAULT_BACKGROUND_COLOUR;
     }
     
     
@@ -49,6 +60,11 @@ public class RadioButton extends Component
      * The component's foreground colour
      */
     public Color foregroundColour = DEFAULT_FOREGROUND_COLOUR;
+    
+    /**
+     * The component's box's background colour
+     */
+    public Color boxBackgroundColour = DEFAULT_BOX_BACKGROUND_COLOUR;
     
     /**
        Whether the radio button is selected
@@ -65,6 +81,9 @@ public class RadioButton extends Component
     @Override
     protected void paintComponent(final Graphics2D g)
     {
+	g.setColor(this.backgroundColour);
+	g.fillRect(0, 0, this.size.width, this.size.height);
+	
 	int w = (Math.min(Math.min(this.size.width, this.size.height), 13) - 1) | 1;
 	int x = (this.size.width - w) / 2;
 	int y = (this.size.height - w) / 2;
@@ -77,7 +96,7 @@ public class RadioButton extends Component
 	}
 	else
 	{
-	    g.setColor(this.backgroundColour);
+	    g.setColor(this.boxBackgroundColour);
 	    g.fillPolygon(new int[] { x - 0, x + w / 2, x + w, x + w / 2 },
 			  new int[] { y + w / 2, y - 1, y + w / 2, y + w }, 4);
 	    g.setColor(this.foregroundColour);

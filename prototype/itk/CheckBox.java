@@ -27,6 +27,16 @@ import java.awt.*;
 public class CheckBox extends Component
 {
     /**
+     * The default background colour
+     */
+    private static final Color DEFAULT_BACKGROUND_COLOUR = new Color(0, 0, 0, 0);
+    
+    /**
+     * The default box background colour
+     */
+    private static final Color DEFAULT_BOX_BACKGROUND_COLOUR = Color.WHITE;
+    
+    /**
      * The default foreground colour
      */
     private static final Color DEFAULT_FOREGROUND_COLOUR = Color.BLACK;
@@ -41,6 +51,7 @@ public class CheckBox extends Component
     public CheckBox(final String name)
     {
 	super(name);
+	this.backgroundColour = DEFAULT_BACKGROUND_COLOUR;
     }
     
     
@@ -49,6 +60,11 @@ public class CheckBox extends Component
      * The component's foreground colour
      */
     public Color foregroundColour = DEFAULT_FOREGROUND_COLOUR;
+    
+    /**
+     * The component's box's background colour
+     */
+    public Color boxBackgroundColour = DEFAULT_BOX_BACKGROUND_COLOUR;
     
     /**
        Whether the check box is checked
@@ -65,6 +81,9 @@ public class CheckBox extends Component
     @Override
     protected void paintComponent(final Graphics2D g)
     {
+	g.setColor(this.backgroundColour);
+	g.fillRect(0, 0, this.size.width, this.size.height);
+	
 	int w = Math.min(Math.min(this.size.width, this.size.height), 13);
 	int x = (this.size.width - w) / 2;
 	int y = (this.size.height - w) / 2;
@@ -74,9 +93,9 @@ public class CheckBox extends Component
 	{
 	    g.fillRect(x, y, w, w);
 	    final int re, gr, bl;
-	    re = this.backgroundColour.getRed();
-	    gr = this.backgroundColour.getGreen();
-	    bl = this.backgroundColour.getBlue();
+	    re = this.boxBackgroundColour.getRed();
+	    gr = this.boxBackgroundColour.getGreen();
+	    bl = this.boxBackgroundColour.getBlue();
 	    g.setColor(new Color(re, gr, bl, 128));
 	    if (w > 3)
 		g.fillRect(x + 1, y + 1, w - 2, w - 2);
@@ -90,7 +109,7 @@ public class CheckBox extends Component
 	    g.drawRect(x, y, w - 1, w - 1);
 	    if (w > 3)
 	    {
-		g.setColor(this.backgroundColour);
+		g.setColor(this.boxBackgroundColour);
 		g.fillRect(x + 1, y + 1, w - 2, w - 2);
 	    }
 	}
