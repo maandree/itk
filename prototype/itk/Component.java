@@ -193,7 +193,7 @@ public class Component
 	    x = ((Point)(child.constraints)).x;
 	    y = ((Point)(child.constraints)).y;
 	}
-	return new Rectangle(x, y, child.size.width, child.size.height);
+	return new Rectangle(x, y, child.preferredSize.width, child.preferredSize.height);
     }
     
     

@@ -44,6 +44,11 @@ public class Test
 		    blue.preferredSize = new Dimension(36, 36);
 		    blue.constraints = DockLayout.TOP;
 		    
+		    final Separator vsep = new Separator("Vertical separator");
+		    vsep.orientation = Separator.VERTICAL;
+		    vsep.preferredSize = vsep.calculateSize(0, 0);
+		    vsep.constraints = DockLayout.TOP;
+		    
 		    final Component red = new Component("Red component");
 		    red.backgroundColour = new Color(188, 0, 0);
 		    red.preferredSize = new Dimension(16, 16);
@@ -56,6 +61,11 @@ public class Test
 		    toggle.constraints = DockLayout.yeild(1, DockLayout.LEFT, 0);
 		    toggle.preferredSize = toggle.calculateSize(0, 0);
 		    toggle.pressed = true;
+		    
+		    final Separator hsep = new Separator("Horizontal separator");
+		    hsep.orientation = Separator.HORIZONTAL;
+		    hsep.preferredSize = hsep.calculateSize(0, 0);
+		    hsep.constraints = DockLayout.LEFT;
 		    
 		    final Label label = new Label("Label component");
 		    label.text = "Hello world";
@@ -229,14 +239,18 @@ public class Test
 		    final Window window = new Window("Test window");
 		    window.layoutManager = new DockLayout(window);
 		    window.children.add(blue);
+		    window.children.add(vsep);
 		    window.children.add(red);
 		    window.children.add(toggle);
+		    window.children.add(hsep);
 		    window.children.add(label);
 		    window.children.add(cyan);
 		    window.children.add(inner);
 		    blue.parent = window;
+		    vsep.parent = window;
 		    red.parent = window;
 		    toggle.parent = window;
+		    hsep.parent = window;
 		    label.parent = window;
 		    cyan.parent = window;
 		    inner.parent = window;
