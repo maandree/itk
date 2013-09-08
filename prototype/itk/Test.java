@@ -39,10 +39,11 @@ public class Test
 		@Override
 		public void run()
 		{
-		    final Component blue = new Component("Blue component");
-		    blue.backgroundColour = new Color(0, 0, 188);
+		    final ProgressBar blue = new ProgressBar("Blue component");
+		    /* blue.backgroundColour = new Color(0, 0, 188); */
 		    blue.preferredSize = new Dimension(36, 36);
 		    blue.constraints = DockLayout.TOP;
+		    blue.value[0] = 75;
 		    
 		    final Separator vsep = new Separator("Vertical separator");
 		    vsep.orientation = Separator.VERTICAL;
