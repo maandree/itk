@@ -157,7 +157,7 @@ public class Component
 	    this.layoutManager.prepare();
 	try
 	{
-	    for (final Component child : children)
+	    for (final Component child : this.children)
 	    {
 		final Rectangle rect = this.locateChild(child);
 		if (rect != null)
