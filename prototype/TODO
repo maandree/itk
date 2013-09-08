@@ -19,9 +19,6 @@ Expander
 ExpandPane
 ComboBox
 ComboCheckBox
-TextField
-TextArea
-PasswordField
 Terminal
 CurtainPane
 PrintDialog
