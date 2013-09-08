@@ -181,10 +181,43 @@ public class Component
      */
     public void sync()
     {
+	this.sync((Rectangle)null);
+    }
+    
+    /**
+     * Synchronises the graphics
+     * 
+     * @param  area  Area to synchronise, {@code null} for everything
+     */
+    public void sync(final Rectangle area)
+    {
 	final Graphics2D g;
 	if (this.parent != null)
-	    if ((g = this.parent.sync(this)) != null)
-		this.paint(g);
+	{
+	    if (this.backgroundColour.getAlpha() != 255)
+	    {
+		final Rectangle inParent = this.parent.locateChild(this);
+		if (inParent != null)
+		    if (area == null)
+			this.parent.sync(inParent);
+		    else
+		    {
+			final int x, y, w, h;
+			x = area.x + inParent.x;
+			y = area.y + inParent.y;
+			w = area.width;
+			h = area.height;
+			this.parent.sync(new Rectangle(x, y, w, h));
+		    }
+	    }
+	    else
+		if ((g = this.parent.sync(this)) != null)
+		{
+		    if (area != null)
+			g.clip(area);
+		    this.paint(g);
+		}
+	}
     }
     
     /**
