@@ -37,6 +37,7 @@ Plug
 TableLayout
 FlowLayout
 GridLayout
+GridFlowLayout
 
 Text object instead of String that can have icons, formating and anything else
 Dropdown terminal
