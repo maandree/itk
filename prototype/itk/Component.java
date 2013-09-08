@@ -263,7 +263,7 @@ public class Component
 	}
 	
 	child.size = child.preferredSize;
-	return new Rectangle(x, y, child.preferredSize.width, child.preferredSize.height);
+	return new Rectangle(x, y, w, h);
     }
     
     
