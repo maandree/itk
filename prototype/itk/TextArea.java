@@ -22,9 +22,9 @@ import java.awt.*;
 
 
 /**
- * Single line text input field component class
+ * Multiple line text input field component class
  */
-public class TextField extends Component
+public class TextArea extends Component
 {
     /**
      * The default foreground colour
@@ -43,7 +43,7 @@ public class TextField extends Component
      * 
      * @param  name  The name of the component
      */
-    public TextField(final String name)
+    public TextArea(final String name)
     {
 	super(name);
     }
@@ -51,7 +51,7 @@ public class TextField extends Component
     
     
     /**
-     * The fields's text
+     * The field's text
      */
     public String text = null;
     

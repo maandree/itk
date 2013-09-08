@@ -22,9 +22,9 @@ import java.awt.*;
 
 
 /**
- * Single line text input field component class
+ * Password input field component class
  */
-public class TextField extends Component
+public class PasswordField extends Component
 {
     /**
      * The default foreground colour
@@ -43,7 +43,7 @@ public class TextField extends Component
      * 
      * @param  name  The name of the component
      */
-    public TextField(final String name)
+    public PasswordField(final String name)
     {
 	super(name);
     }
