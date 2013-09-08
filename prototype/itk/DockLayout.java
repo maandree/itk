@@ -249,6 +249,15 @@ public class DockLayout implements LayoutManager
 		    continue;
 		}
 	    }
+	    else if ((constraints != null) && (constraints instanceof Point))
+	    {
+		final int cx, cy, cw, ch;
+		cx = ((Point)(constraints)).x;
+		cy = ((Point)(constraints)).y;
+		cw = child.preferredSize.width;
+		ch = child.preferredSize.height;
+		this.prepared.put(child, nonzero(new Rectangle(cx, cy, cw, ch)));
+	    }
 	    this.prepared.put(child, nonzero(new Rectangle(x, y, w, h)));
 	    w = h = 0;
 	}
