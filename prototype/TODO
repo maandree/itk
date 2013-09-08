@@ -41,4 +41,5 @@ GridLayout
 Text object instead of String that can have icons, formating and anything else
 Dropdown terminal
 Resource monitor
+Gravity on positions
 
