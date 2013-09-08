@@ -67,7 +67,7 @@ public class Label extends Component
      * 
      * @param  g  The object with which to paint
      */
-    protected void paint(final Graphics2D g)
+    protected void paintComponent(final Graphics2D g)
     {
 	g.setColor(this.backgroundColour);
 	g.fillRect(0, 0, this.size.width, this.size.height);
@@ -87,8 +87,6 @@ public class Label extends Component
 		index++;
 	    }
 	}
-	
-	this.printChildren(g);
     }
     
     

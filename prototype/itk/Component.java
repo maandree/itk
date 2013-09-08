@@ -20,6 +20,7 @@ package itk;
 
 import java.awt.*;
 import java.util.*;
+import java.awt.image.BufferedImage;
 
 
 /**
@@ -96,19 +97,53 @@ public class Component
      */
     public LayoutManager layoutManager = null;
     
+    /**
+     * Buffer for double buffer
+     */
+    public volatile BufferedImage bufferImage = null;
     
+    /**
+     * Whether the component is double buffered
+     */
+    public boolean isDoubleBuffered = false;
+    
+    
+    
+    /**
+     * Repaint the component and its childred
+     * 
+     * @param  g  The object with which to paint
+     */
+    protected void paint(final Graphics2D g)
+    {
+	final int w = this.size.width, h = this.size.height;
+	
+	final boolean doubleBuffered = this.isDoubleBuffered;
+	BufferedImage img = null;
+	Graphics2D gg = g;
+	if (doubleBuffered)
+	{
+	    img = bufferImage;
+	    if ((img.getWidth() < w) || (img.getHeight() < h)) /* XXX new also of component shrunk considerably */
+		this.bufferImage = img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	}
+	
+	this.paintComponent(gg);
+	this.paintChildren(gg);
+	
+	if (doubleBuffered)
+	    g.drawImage(img, 0, 0, null);
+    }
     
     /**
      * Repaint the component
      * 
      * @param  g  The object with which to paint
      */
-    protected void paint(final Graphics2D g)
+    protected void paintComponent(final Graphics2D g)
     {
 	g.setColor(this.backgroundColour);
 	g.fillRect(0, 0, this.size.width, this.size.height);
-	
-	this.printChildren(g);
     }
     
     /**
@@ -116,7 +151,7 @@ public class Component
      * 
      * @param  g  The object with which to paint
      */
-    protected void printChildren(final Graphics2D g)
+    protected void paintChildren(final Graphics2D g)
     {
 	if (this.layoutManager != null)
 	    this.layoutManager.prepare();

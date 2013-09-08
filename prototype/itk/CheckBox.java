@@ -62,7 +62,7 @@ public class CheckBox extends Component
      * 
      * @param  g  The object with which to paint
      */
-    protected void paint(final Graphics2D g)
+    protected void paintComponent(final Graphics2D g)
     {
 	int w = Math.min(Math.min(this.size.width, this.size.height), 13);
 	int x = (this.size.width - w) / 2;
@@ -93,8 +93,6 @@ public class CheckBox extends Component
 		g.fillRect(x + 1, y + 1, w - 2, w - 2);
 	    }
 	}
-	
-	this.printChildren(g);
     }
     
     

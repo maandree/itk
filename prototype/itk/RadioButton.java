@@ -62,7 +62,7 @@ public class RadioButton extends Component
      * 
      * @param  g  The object with which to paint
      */
-    protected void paint(final Graphics2D g)
+    protected void paintComponent(final Graphics2D g)
     {
 	int w = (Math.min(Math.min(this.size.width, this.size.height), 13) - 1) | 1;
 	int x = (this.size.width - w) / 2;
@@ -83,8 +83,6 @@ public class RadioButton extends Component
 	    g.drawPolygon(new int[] { x - 0, x + w / 2, x + w - 1, x + w / 2 },
 			  new int[] { y + w / 2, y - 0, y + w / 2, y + w - 1}, 4);
 	}
-	
-	this.printChildren(g);
     }
     
     

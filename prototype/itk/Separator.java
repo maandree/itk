@@ -73,7 +73,7 @@ public class Separator extends Component
      * 
      * @param  g  The object with which to paint
      */
-    protected void paint(final Graphics2D g)
+    protected void paintComponent(final Graphics2D g)
     {
 	int x = this.size.width;
 	int y = this.size.height;
@@ -83,8 +83,6 @@ public class Separator extends Component
 	    g.drawLine(0, y >> 1, x - 1, y >> 1);
 	else
 	    g.drawLine(x >> 1, 0, x >> 1, y - 1);
-	
-	this.printChildren(g);
     }
     
     

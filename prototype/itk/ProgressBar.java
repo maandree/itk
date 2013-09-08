@@ -150,7 +150,7 @@ public class ProgressBar extends Component
      * 
      * @param  g  The object with which to paint
      */
-    protected void paint(final Graphics2D g)
+    protected void paintComponent(final Graphics2D g)
     {
 	int x = this.size.width - 1;
 	int y = this.size.height - 1;
@@ -234,8 +234,6 @@ public class ProgressBar extends Component
 		index++;
 	    }
 	}
-	
-	this.printChildren(g);
     }
     
     
