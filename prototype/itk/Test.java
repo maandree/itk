@@ -188,12 +188,23 @@ public class Test
 		    iblue5.constraints = DockLayout.yeild(1, DockLayout.LEFT, 1);
 		    iblue5.value = false;
 		    
-		    
 		    final Button button = new Button("Centre component");
 		    button.text = "Centre\nCentre";
 		    button.backgroundColour = new Color(0, 192, 0);
 		    button.foregroundColour = new Color(255, 63, 255);
 		    button.constraints = DockLayout.CENTER;
+		    
+		    final Button silver = new Button("Silver radioed button");
+		    silver.text = "Silver ratioed";
+		    silver.preferredSize = Button.silverRatio(silver.calculateSize());
+		    
+		    final Frame frame = new Frame("Frame component");
+		    frame.container.backgroundColour = new Color(188, 188, 188);
+		    frame.container.layoutManager = new DockLayout(frame.container);
+		    (frame.label = silver).parent = frame;
+		    frame.container.children.add(button);
+		    button.parent = frame.container;
+		    
 		    
 		    final Component inner = new Button("Inner dock component");
 		    inner.layoutManager = new DockLayout(inner);
@@ -225,7 +236,7 @@ public class Test
 		    inner.children.add(igreen5);
 		    inner.children.add(iblue5);
 		    
-		    inner.children.add(button);
+		    inner.children.add(frame);
 		    
 		    ired1.parent = ired2.parent = ired3.parent = inner;
 		    ired4.parent = ired4.parent = inner;
@@ -235,16 +246,7 @@ public class Test
 		    igreen4.parent = igreen5.parent = inner;
 		    iblue1.parent = iblue2.parent = iblue3.parent = inner;
 		    iblue4.parent = iblue5.parent = inner;
-		    button.parent = inner;
-		    
-		    
-		    final Button silver = new Button("Silver radioed floating button");
-		    silver.text = "Silver ratioed";
-		    silver.preferredSize = Button.silverRatio(silver.calculateSize());
-		    silver.constraints = new Point(16, 16);
-		    
-		    button.children.add(silver);
-		    silver.parent = button;
+		    frame.parent = inner;
 		    
 		    
 		    final Window window = new Window("Test window");
