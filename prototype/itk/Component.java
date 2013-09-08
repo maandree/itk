@@ -255,7 +255,8 @@ public class Component
 	if (this.layoutManager != null)
 	    return this.layoutManager.locate(child);
 	
-	int x = 0, y = 0, w = child.preferredSize.width, h = child.preferredSize.height;
+	int x = 0, y = 0;
+	final int w = child.preferredSize.width, h = child.preferredSize.height;
 	if ((child.constraints != null) && (child.constraints instanceof Point))
 	{
 	    x = ((Point)(child.constraints)).x;
