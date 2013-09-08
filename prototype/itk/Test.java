@@ -248,6 +248,7 @@ public class Test
 		    
 		    final Window window = new Window("Test window");
 		    window.layoutManager = new DockLayout(window);
+		    window.isDoubleBuffered = true;
 		    window.children.add(blue);
 		    window.children.add(vsep);
 		    window.children.add(red);

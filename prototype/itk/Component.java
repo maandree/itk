@@ -124,7 +124,7 @@ public class Component
 	if (doubleBuffered)
 	{
 	    img = bufferImage;
-	    if ((img.getWidth() < w) || (img.getHeight() < h)) /* XXX new also of component shrunk considerably */
+	    if ((img == null) || (img.getWidth() < w) || (img.getHeight() < h)) /* XXX new also of component shrunk considerably */
 		this.bufferImage = img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 	}
 	
