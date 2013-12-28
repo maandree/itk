@@ -83,7 +83,7 @@ public class Component
     public Component parent = null;
     
     /**
-     * The components childred
+     * The component's childred
      */
     public ArrayList<Component> children = new ArrayList<Component>();
     
