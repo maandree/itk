@@ -21,6 +21,11 @@
 
 #include "itktypes.h"
 
+struct _itk_graphics;
+struct _itk_layout_manager;
+
+
+#define __this__  struct _itk_component* this
 
 /**
  * The root component class
@@ -31,6 +36,11 @@ typedef struct _itk_component
    * The name of the component
    */
   char* name;
+  
+  /**
+   * Whether the component is present
+   */
+  bool_t visible;
   
   /**
    * The component's background colour
@@ -60,7 +70,7 @@ typedef struct _itk_component
   /**
    * The components's parent
    */
-  itk_component* parent;
+  struct _itk_component* parent;
   
   /**
    * The number of children the component has
@@ -70,7 +80,7 @@ typedef struct _itk_component
   /**
    * The component's childred
    */
-  itk_component* children;
+  struct _itk_component** children;
   
   /**
    * Layout constraints
@@ -80,7 +90,7 @@ typedef struct _itk_component
   /**
    * The component's layout manager
    */
-  itk_layout_manager* layout_manager;
+  struct _itk_layout_manager* layout_manager;
   
   /**
    * The number of off-screen buffers the component uses
@@ -97,8 +107,91 @@ typedef struct _itk_component
    */
   void** buffers;
   
+  
+  /**
+   * Locates the positions of the corners of a child
+   * 
+   * @param   child  The child
+   * @return         The rectangle the child is confound in
+   */
+  rectangle_t (*locate_child)(__this__, struct _itk_component* child);
+  
+  
+  /**
+   * Synchronises the graphics
+   */
+  void (*sync)(__this__);
+  
+  /**
+   * Synchronises the graphics
+   * 
+   * @param  area  Area to synchronise, `NULL` for everything
+   */
+  void (*sync_area)(__this__, rectangle_t* area);
+  
+  /**
+   * Synchronises the graphics on a child
+   * 
+   * @param   child  The child
+   * @return         The object with which to paint
+   */
+  struct _itk_graphics* (*sync_child)(__this__, struct _itk_component* child);
+  
+  
+  /**
+   * Repaint the component and its childred
+   * 
+   * @param  g  The object with which to paint
+   */
+  void (*paint)(__this__, struct _itk_graphics* g);
+  
+  /**
+   * Repaint the component
+   * 
+   * @param  g  The object with which to paint
+   */
+  void (*paint_component)(__this__, struct _itk_graphics* g);
+  
+  /**
+   * Repaint the component's children
+   * 
+   * @param  g  The object with which to paint
+   */
+  void (*paint_children)(__this__, struct _itk_graphics* g);
+  
+  
+  /**
+   * Add a child component to the component
+   * 
+   * @param  child  The child
+   */
+  void (*add_child)(__this__, struct _itk_component* child);
+  
+  /**
+   * Remove a child component from the component
+   * 
+   * @param  child  The child
+   */
+  void (*remove_child)(__this__, struct _itk_component* child);
+  
+  /**
+   * Remove a child component from the component
+   * 
+   * @param  child  The index of the child
+   */
+  void (*remove_child_by_index)(__this__, long child);
+  
 } itk_component;
 
+#undef __this__
+
+
+/**
+ * Constructor
+ * 
+ * @param  name  The name of the component
+ */
+itk_component* itk_new_component(char* name);
 
 #endif
 

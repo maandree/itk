@@ -53,6 +53,7 @@ public class Window extends Component
 	final Insets in = this.window.getInsets();
 	this.window.setSize(new Dimension(in.left + 800 + in.right, in.top + 600 + in.bottom));
 	this.window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	this.isDoubleBuffered = true;
     }
     
     

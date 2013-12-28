@@ -108,11 +108,63 @@ typedef struct _size2_t
   dimension_t width;
   
   /**
-   * The width component of the size
+   * The height component of the size
    */
   dimension_t height;
   
 } size2_t;
+
+
+/**
+ * One-dimensional position type
+ */
+typedef int32_t position_t;
+
+
+/**
+ * Rectangle structure
+ */
+typedef struct _position2_t
+{
+  /**
+   * The position on the horizontal axis
+   */
+  position_t x;
+  
+  /**
+   * The position on the vertical axis
+   */
+  position_t y;
+  
+} position2_t;
+
+
+/**
+ * Rectangle structure
+ */
+typedef struct _rectangle_t
+{
+  /**
+   * The position on the horizontal axis
+   */
+  position_t x;
+  
+  /**
+   * The position on the vertical axis
+   */
+  position_t y;
+  
+  /**
+   * The width component of the size
+   */
+  dimension_t width;
+  
+  /**
+   * The height component of the size
+   */
+  dimension_t height;
+  
+} rectangle_t;
 
 
 #endif

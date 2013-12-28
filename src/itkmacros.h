@@ -24,6 +24,11 @@
 
 
 /**
+ * Null pointer
+ */
+#define NULL 0
+
+/**
  * False booleanic value
  */
 #define false 0
@@ -138,6 +143,42 @@ inline colour_t new_colour_by_rgb(uint8_t red, uint8_t green, uint8_t blue)
 inline size2_t new_size2(dimension_t width, dimension_t height)
 {
   size2_t rc;
+  rc.width = width;
+  rc.height = height;
+  return rc;
+}
+
+
+/**
+ * Create a two-dimensional position value
+ * 
+ * @param   x  The position on the horizontal axis
+ * @param   y  The position on the vertical axis
+ * @return     A value containing both `x` and `y`
+ */
+inline position2_t new_position2(position_t x, position_t y)
+{
+  position2_t rc;
+  rc.x = x;
+  rc.y = y;
+  return rc;
+}
+
+
+/**
+ * Create a two-dimensional position value
+ * 
+ * @param   x       The position on the horizontal axis
+ * @param   y       The position on the vertical axis
+ * @param   width   The width
+ * @param   height  The height
+ * @return          A value containing the parameters
+ */
+inline rectangle_t new_rectangle(position_t x, position_t y, dimension_t width, dimension_t height)
+{
+  rectangle_t rc;
+  rc.x = x;
+  rc.y = y;
   rc.width = width;
   rc.height = height;
   return rc;

@@ -126,6 +126,7 @@ public class Component
 	    img = bufferImage;
 	    if ((img == null) || (img.getWidth() < w) || (img.getHeight() < h)) /* XXX new also of component shrunk considerably */
 		this.bufferImage = img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	    gg = img.createGraphics();
 	}
 	
 	this.paintComponent(gg);
