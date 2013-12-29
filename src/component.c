@@ -170,7 +170,11 @@ static void paint_children(__this__, itk_graphics* g)
       child = *(this->children + i);
       rect = this->locate_child(this, child);
       if ((rect.width | rect.height) > 0)
-	child->paint(child, g->create(g, rect));
+	{
+	  itk_graphics* child_g = g->create(g, rect)
+	  child->paint(child, child_g);
+	  free(child_g);
+	}
     }
   
   if (this->layout_manager)
