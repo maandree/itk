@@ -53,20 +53,26 @@ typedef struct _itk_layout_manager
    * @param   child  The child, to the component using the layout manager, of interest
    * @return         The rectangle the child is confound in
    */
-  rectangle_t (*locate)(__this__, struct _itk_component* child);
+  rectangle_t* (*locate)(__this__, struct _itk_component* child);
   
   /**
    * Calculate the combined advisory minimum size of all components
+   * 
+   * @return  Advisory minimum size for the container
    */
   size2_t (*minimum_size)(__this__);
   
   /**
    * Calculate the combined preferred size of all components
+   * 
+   * @return  Rreferred size for the container
    */
   size2_t (*preferred_size)(__this__);
   
   /**
    * Calculate the combined advisory maximum size of all components
+   * 
+   * @return  Advisory maximum size for the container
    */
   size2_t (*maximum_size)(__this__);
   
