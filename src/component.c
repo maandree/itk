@@ -279,8 +279,10 @@ itk_component* fork_component(__this__)
     rc->buffers = calloc(rc->buffer_count, sizeof(void*));
   if (rc->children_count && rc->children)
     {
-      long i, n = rc->children_count;
-      rc->children = malloc(rc->children_count * sizeof(void*));
+      long i, n = rc->children_count, m = rc->children_count, s = 1;
+      while ((m + 1) & ~m != m + 1)
+	m |= m >> s++;
+      rc->children = malloc((m + 1) * sizeof(void*));
       for (i = 0; i < n; i++)
 	*(rc->children + i) = *(this->children + i);
     }
