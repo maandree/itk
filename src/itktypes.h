@@ -22,6 +22,10 @@
 #include <inttypes.h>
 
 
+/* `defined` is included in some structures to emulate `NULL`
+ * without the programmer having to care to much about memory leaks */
+
+
 /**
  * Booleanic data type
  */
@@ -79,6 +83,11 @@ typedef union _argb_colour_t
 typedef struct _colour_t
 {
   /**
+   * `false` if the value is not defined
+   */
+  bool_t defined;
+  
+  /**
    * Name of the colour, `NULL` if the colours is a raw colour
    */
   char* system_colour;
@@ -98,10 +107,33 @@ typedef int32_t dimension_t;
 
 
 /**
+ * One-dimensional size structure
+ */
+typedef struct _size1_t
+{
+  /**
+   * `false` if the value is not defined
+   */
+  bool_t defined;
+  
+  /**
+   * The size on the one axis
+   */
+  dimension_t size;
+  
+} size1_t;
+
+
+/**
  * Two-dimensional size structure
  */
 typedef struct _size2_t
 {
+  /**
+   * `false` if the value is not defined
+   */
+  bool_t defined;
+  
   /**
    * The width component of the size
    */
@@ -122,10 +154,33 @@ typedef int32_t position_t;
 
 
 /**
- * Rectangle structure
+ * One-dimensional position structure
+ */
+typedef struct _position1_t
+{
+  /**
+   * `false` if the value is not defined
+   */
+  bool_t defined;
+  
+  /**
+   * The position on the one axis
+   */
+  position_t position;
+  
+} position1_t;
+
+
+/**
+ * Two-dimensional position structure
  */
 typedef struct _position2_t
 {
+  /**
+   * `false` if the value is not defined
+   */
+  bool_t defined;
+  
   /**
    * The position on the horizontal axis
    */
@@ -144,6 +199,11 @@ typedef struct _position2_t
  */
 typedef struct _rectangle_t
 {
+  /**
+   * `false` if the value is not defined
+   */
+  bool_t defined;
+  
   /**
    * The position on the horizontal axis
    */

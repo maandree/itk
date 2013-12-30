@@ -54,7 +54,7 @@ void itk_free_dock_layout(itk_layout_manager* this);
  * @param   clockwise      The number of components for which to yeild, that are position at the edge the 90° clockwise position
  * @return                 The constraint to use, do not forget to free it when it is not in use anymore
  */
-void* itk_dock_layout_yeild(long anticlockwise, char* edge, long clockwise);
+char* itk_dock_layout_yeild(long anticlockwise, char* edge, long clockwise);
 
 
 #endif

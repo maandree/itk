@@ -45,9 +45,10 @@
  * @param   colour_name  The name of the colour
  * @return               A colour described by the parameters
  */
-inline colour_t new_colour_by_name(char* colour_name)
+static inline colour_t new_colour_by_name(char* colour_name)
 {
   colour_t rc;
+  rc.defined = true;
   rc.system_colour = colour_name;
   return rc;
 }
@@ -58,9 +59,10 @@ inline colour_t new_colour_by_name(char* colour_name)
  * @param   value  The raw value of the colour, the alpha component is kept
  * @return         A colour described by the parameters
  */
-inline colour_t new_colour_by_value(uint32_t value)
+static inline colour_t new_colour_by_value(uint32_t value)
 {
   colour_t rc;
+  rc.defined = true;
   rc.system_colour = NULL;
   rc.argb_colour.value = value;
   return rc;
@@ -72,7 +74,7 @@ inline colour_t new_colour_by_value(uint32_t value)
  * @param   value  The raw value of the colour, the alpha component is ignored
  * @return         A colour described by the parameters
  */
-inline colour_t new_colour_by_opaque_value(uint32_t value)
+static inline colour_t new_colour_by_opaque_value(uint32_t value)
 {
   colour_t rc = new_colour_by_value(value);
   rc.argb_colour.c.alpha = 255;
@@ -88,9 +90,10 @@ inline colour_t new_colour_by_opaque_value(uint32_t value)
  * @param   blue   The intensity of the blue subpixel of the colour
  * @return         A colour described by the parameters
  */
-inline colour_t new_colour_by_argb(uint8_t alpha, uint8_t red, uint8_t green, uint8_t blue)
+static inline colour_t new_colour_by_argb(uint8_t alpha, uint8_t red, uint8_t green, uint8_t blue)
 {
   colour_t rc;
+  rc.defined = true;
   rc.system_colour = NULL;
   rc.argb_colour.c.alpha = alpha;
   rc.argb_colour.c.red = red;
@@ -107,7 +110,7 @@ inline colour_t new_colour_by_argb(uint8_t alpha, uint8_t red, uint8_t green, ui
  * @param   blue   The intensity of the blue subpixel of the colour
  * @return         A colour described by the parameters
  */
-inline colour_t new_colour_by_rgba(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+static inline colour_t new_colour_by_rgba(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
   return new_colour_by_argb(alpha, red, green, blue);
 }
@@ -121,7 +124,7 @@ inline colour_t new_colour_by_rgba(uint8_t red, uint8_t green, uint8_t blue, uin
  * @param   alpha  The opacity of the colour
  * @return         A colour described by the parameters
  */
-inline colour_t new_colour_by_rgb(uint8_t red, uint8_t green, uint8_t blue)
+static inline colour_t new_colour_by_rgb(uint8_t red, uint8_t green, uint8_t blue)
 {
   return new_colour_by_argb(255, red, green, blue);
 }
@@ -134,17 +137,48 @@ inline colour_t new_colour_by_rgb(uint8_t red, uint8_t green, uint8_t blue)
 
 
 /**
+ * Create an one-dimensional size value
+ * 
+ * @param   size  The size, can be `UNBOUNDED`
+ * @return        A value containing `size`
+ */
+static inline size1_t new_size1(dimension_t size)
+{
+  size1_t rc;
+  rc.defined = true;
+  rc.size = size;
+  return rc;
+}
+
+
+/**
  * Create a two-dimensional size value
  * 
  * @param   width   The width, can be `UNBOUNDED`
  * @param   height  The height, can be `UNBOUNDED`
  * @return          A value containing both `width` and `height`
  */
-inline size2_t new_size2(dimension_t width, dimension_t height)
+static inline size2_t new_size2(dimension_t width, dimension_t height)
 {
   size2_t rc;
+  rc.defined = true;
   rc.width = width;
   rc.height = height;
+  return rc;
+}
+
+
+/**
+ * Create an one-dimensional position value
+ * 
+ * @param   position  The position
+ * @return            A value containing both `position`
+ */
+static inline position1_t new_position1(position_t position)
+{
+  position1_t rc;
+  rc.defined = true;
+  rc.position = position;
   return rc;
 }
 
@@ -156,9 +190,10 @@ inline size2_t new_size2(dimension_t width, dimension_t height)
  * @param   y  The position on the vertical axis
  * @return     A value containing both `x` and `y`
  */
-inline position2_t new_position2(position_t x, position_t y)
+static inline position2_t new_position2(position_t x, position_t y)
 {
   position2_t rc;
+  rc.defined = true;
   rc.x = x;
   rc.y = y;
   return rc;
@@ -174,9 +209,10 @@ inline position2_t new_position2(position_t x, position_t y)
  * @param   height  The height
  * @return          A value containing the parameters
  */
-inline rectangle_t new_rectangle(position_t x, position_t y, dimension_t width, dimension_t height)
+static inline rectangle_t new_rectangle(position_t x, position_t y, dimension_t width, dimension_t height)
 {
   rectangle_t rc;
+  rc.defined = true;
   rc.x = x;
   rc.y = y;
   rc.width = width;

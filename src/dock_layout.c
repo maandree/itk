@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "dock_layout.h"
+#include "hash_table.h"
 #include "itkmacros.h"
 
 #include <stdio.h>
@@ -25,8 +26,8 @@
 
 #define __this__  struct _itk_layout_manager* this
 
-#define CONTAINER(layout)  ((itk_component*)*((void**)(layout->data) + 0))
-#define PREPARED(layout)  ((itk_hash_table*)*((void**)(layout->data) + 1))
+#define CONTAINER(layout)  *((void**)(layout->data) + 0)
+#define PREPARED(layout)   *((void**)(layout->data) + 1)
 
 
 /**
@@ -53,7 +54,7 @@ static void done(__this__)
  * @param   child  The child, to the component using the layout manager, of interest
  * @return         The rectangle the child is confound in
  */
-static rectangle_t* locate(__this__, struct _itk_component* child)
+static rectangle_t locate(__this__, struct _itk_component* child)
 {
   rectangle_t* r;
   bool_t p = PREPARED(this) == NULL;
@@ -61,14 +62,20 @@ static rectangle_t* locate(__this__, struct _itk_component* child)
   if (p)
     this->prepare(this);
   
-  r = itk_hash_table_get(PREPARED(this), child);
-  if (r)
-    child->size = new_position2(r->width, r->height);
+  if ((r = itk_hash_table_get(PREPARED(this), child)))
+    child->size = new_size2(r->width, r->height);
   
   if (p)
     this->done(this);
   
-  return r;
+  if (r)
+    return *r;
+  else
+    {
+      rectangle_t rc;
+      rc.defined = false;
+      return rc;
+    }
 }
 
 /**
@@ -123,9 +130,8 @@ itk_layout_manager* itk_new_dock_layout(itk_component* container)
   rc->minimum_size = minimum_size;
   rc->preferred_size = preferred_size;
   rc->maximum_size = maximum_size;
-  
-  *((void**)(rc->data) + 0) = container;
-  *((void**)(rc->data) + 1) = NULL;
+  CONTAINER(rc) = container;
+  PREPARED(rc) = NULL;
   return rc;
 }
 
@@ -151,7 +157,7 @@ void itk_free_dock_layout(__this__)
  * @param   clockwise      The number of components for which to yeild, that are position at the edge the 90° clockwise position
  * @return                 The constraint to use, do not forget to free it when it is not in use anymore
  */
-void* itk_dock_layout_yeild(long anticlockwise, char* edge, long clockwise)
+char* itk_dock_layout_yeild(long anticlockwise, char* edge, long clockwise)
 {
   char* rc;
   long len = 3, x;

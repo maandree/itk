@@ -40,6 +40,7 @@ static rectangle_t locate_child(__this__, struct _itk_component* child)
   if (this->layout_manager)
     return this->layout_manager->locate(this->layout_manager, child);
   
+  rc.defined = true;
   rc.x = 0;
   rc.y = 0;
   rc.width = child->preferred_size.width;
@@ -58,7 +59,7 @@ static rectangle_t locate_child(__this__, struct _itk_component* child)
 /**
  * Synchronises the graphics
  * 
-   * @param  area  Area to synchronise, `NULL` for everything
+ * @param  area  Area to synchronise, `NULL` for everything
  */
 static void sync_area(__this__, rectangle_t* area)
 {
@@ -71,9 +72,9 @@ static void sync_area(__this__, rectangle_t* area)
   if (this->background_colour.argb_colour.c.alpha != 255)
     {
       rect = this->parent->locate_child(this->parent, this);
-      if ((rect.width | rect.height) > 0)
+      if (rect.defined && ((rect.width | rect.height) > 0))
 	{
-	  if ((area == NULL) || ((area->width | area->height) < 0))
+	  if ((area == NULL) || (area->defined == false) || ((area->width | area->height) < 0))
 	    this->parent->sync_area(this->parent, &rect);
 	  else
 	    {
@@ -87,7 +88,7 @@ static void sync_area(__this__, rectangle_t* area)
     }
   else if ((g = this->parent->sync_child(this->parent, this)))
     {
-      if ((area->width | area->height) >= 0)
+      if ((area->defined) && ((area->width | area->height) >= 0))
 	g->clip(g, *area);
       this->paint(this, g);
     }
@@ -109,7 +110,7 @@ static itk_graphics* sync_child(__this__, itk_component* child)
     return NULL;
   
   rectangle_t rect = this->locate_child(this, child);
-  if ((rect.width | rect.height) < 0)
+  if ((rect.defined == false) && (rect.width | rect.height) < 0)
     return NULL;
   
   g->clip(g, rect);
@@ -169,7 +170,7 @@ static void paint_children(__this__, itk_graphics* g)
     {
       child = *(this->children + i);
       rect = this->locate_child(this, child);
-      if ((rect.width | rect.height) > 0)
+      if (rect.defined && (rect.width | rect.height) > 0)
 	{
 	  itk_graphics* child_g = g->create(g, rect);
 	  child->paint(child, child_g);
