@@ -174,7 +174,7 @@ static void paint_children(__this__, itk_graphics* g)
 	{
 	  itk_graphics* child_g = g->create(g, rect);
 	  child->paint(child, child_g);
-	  free(child_g);
+	  child_g->free(child_g);
 	}
     }
   

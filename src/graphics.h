@@ -34,6 +34,7 @@ typedef struct _itk_graphics
   void (*translate)(__this__, position2_t offset);
   void (*fill_rectangle)(__this__, rectangle_t area);
   void (*set_colour)(__this__, colour_t colour);
+  void (*free)(__this__);
 } itk_graphics;
 
 #undef __this__
