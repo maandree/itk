@@ -30,6 +30,7 @@
 #define CONTAINER(layout)  *((void**)(layout->data) + 0)
 #define PREPARED(layout)   *((void**)(layout->data) + 1)
 #define MIN(a, b)          ((a) < (b) ? (a) : (b))
+#define MAX(a, b)          ((a) > (b) ? (a) : (b))
 
 
 /**
@@ -57,7 +58,7 @@ rectangle_t* nonzero(position_t x, position_t y, dimension_t width, dimension_t 
  * 
  * @param  mode  0 for normal, 1 for minimum size, 2 for maximum size, 3 for preferred size
  */
-static void prepare_(__this__, mode)
+static void prepare_(__this__, char mode)
 {
   itk_hash_table* prepared = PREPARED(this);
   itk_component* container = CONTAINER(this);
@@ -184,6 +185,7 @@ static void prepare_(__this__, mode)
   PREPARED(this) = itk_new_hash_table();
 }
 
+
 /**
  * Prepare the layout manager for locating of multiple components, probably all of them
  */
@@ -191,6 +193,7 @@ static void prepare(__this__)
 {
   prepare_(this, 0);
 }
+
 
 /**
  * End of `prepare` requirement
@@ -202,6 +205,7 @@ static void done(__this__)
     itk_free_hash_table(hash_table, true, false);
   PREPARED(this) = NULL;
 }
+
 
 /**
  * Locates the positions of the corners of a component
@@ -233,23 +237,86 @@ static rectangle_t locate(__this__, struct _itk_component* child)
     }
 }
 
+
+#define __CALC_SIZE(MODE, SIZE)					\
+  ({								\
+    dimension_t cw = 0, ch = 0;					\
+    dimension_t lw = 0, th = 0;					\
+    dimension_t rw = 0, bh = 0;					\
+    dimension_t x = 0, y = 0;					\
+    dimension_t w, h;						\
+								\
+    if (PREPARED(this) == NULL)					\
+      this->done(this);						\
+    prepare_(this, MODE);					\
+    {								\
+      itk_hash_table* prepared = PREPARED(this);		\
+      itk_component* container = CONTAINER(this);		\
+      long children_count = container->children_count;		\
+      itk_component** children = container->children;		\
+      long children_ptr = 0;					\
+								\
+      for (; children_ptr < children_count; children_ptr++)	\
+	{							\
+	  itk_component* child = *(children + children_ptr);	\
+	  char* constraints = child->constraints;		\
+	  rectangle_t* r;					\
+								\
+	  if ((r = itk_hash_table_get(PREPARED(this), child)))	\
+	    {							\
+	      if (strstr(constraints, "left"))			\
+		{						\
+		  lw += child->SIZE.width;			\
+		  y = MAX(y, r->y + child->SIZE.height + bh);	\
+		}						\
+	      else if (strstr(constraints, "top"))		\
+		{						\
+		  th += child->SIZE.height;			\
+		  x = MAX(x, r->x + child->SIZE.width + rw);	\
+		}						\
+	      else if (strstr(constraints, "right"))		\
+		{						\
+		  rw += child->SIZE.width;			\
+		  y = MAX(y, r->y + child->SIZE.height + th);	\
+		}						\
+	      else if (strstr(constraints, "bottom"))		\
+		{						\
+		  bh += child->SIZE.height;			\
+		  x = MAX(x, r->x + child->SIZE.width + lw);	\
+		}						\
+	      else if (strstr(constraints, "cent"))		\
+		{						\
+		  cw = MAX(cw, child->SIZE.width);		\
+		  ch = MAX(ch, child->SIZE.height);		\
+		}						\
+	      else						\
+		{						\
+		  x = MAX(x, r->x + r->width);			\
+		  y = MAX(y, r->y + r->height);			\
+		}						\
+	    }							\
+	}							\
+    }								\
+    this->done(this);						\
+								\
+    w = lw + cw + rw;						\
+    h = th + ch + bh;						\
+    rc = new_size2(MAX(x, w), MAX(y, h));			\
+  })
+
+
 /**
  * Calculate the combined advisory minimum size of all components
  * 
  * @return  Advisory minimum size for the container
  */
 static size2_t minimum_size(__this__)
-{
+{ 
+  size2_t rc;
+  __CALC_SIZE(1, minimum_size);
+  return rc;
 }
 
-/**
- * Calculate the combined preferred size of all components
- * 
- * @return  Rreferred size for the container
- */
-static size2_t preferred_size(__this__)
-{
-}
 
 /**
  * Calculate the combined advisory maximum size of all components
@@ -258,6 +325,22 @@ static size2_t preferred_size(__this__)
  */
 static size2_t maximum_size(__this__)
 {
+  size2_t rc;
+  __CALC_SIZE(1, maximum_size);
+  return rc;
+}
+
+
+/**
+ * Calculate the combined preferred size of all components
+ * 
+ * @return  Rreferred size for the container
+ */
+static size2_t preferred_size(__this__)
+{
+  size2_t rc;
+  __CALC_SIZE(2, preferred_size);
+  return rc;
 }
 
 
@@ -337,6 +420,37 @@ char* itk_dock_layout_yeild(long anticlockwise, char* edge, long clockwise)
   /* Create value */
   rc = malloc(len * sizeof(char));
   sprintf(rc, "%li %s %li", anticlockwise, edge, clockwise);
+  return rc;
+}
+
+
+/**
+ * Creates contraint for a component to be placed at an absolute position
+ * 
+ * @param   position  The position of the component
+ * @return            The constraint to use, do not forget to free it when it is not in use anymore
+ */
+char* itk_dock_layout_absolute(position2_t position)
+{
+  char* rc;
+  long len = 2, x;
+  
+  /* Calculate length of output to minimise memory usage */
+  if (position.x == 0)
+    len++;
+  else
+    for (x = 1; x < position.x; x *= 10)
+      len++;
+  
+  if (position.y == 0)
+    len++;
+  else
+    for (x = 1; x < position.y; x *= 10)
+      len++;
+  
+  /* Create value */
+  rc = malloc(len * sizeof(char));
+  sprintf(rc, "%li %li", position.x, position.y);
   return rc;
 }
 

@@ -57,5 +57,14 @@ void itk_free_dock_layout(itk_layout_manager* this);
 char* itk_dock_layout_yeild(long anticlockwise, char* edge, long clockwise);
 
 
+/**
+ * Creates contraint for a component to be placed at an absolute position
+ * 
+ * @param   position  The position of the component
+ * @return            The constraint to use, do not forget to free it when it is not in use anymore
+ */
+char* itk_dock_layout_absolute(position2_t position);
+
+
 #endif
 
