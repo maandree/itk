@@ -181,6 +181,17 @@ typedef struct _itk_component
    */
   void (*remove_child_by_index)(__this__, long child);
   
+  
+  /**
+   * Destructor
+   */
+  void (*free)(__this__);
+  
+  /**
+   * Destructor that also frees the layout manager and children
+   */
+  void (*free_everything)(__this__);
+  
 } itk_component;
 
 #undef __this__

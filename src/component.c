@@ -234,6 +234,32 @@ static void remove_child_by_index(__this__, long child)
 
 
 /**
+ * Destructor
+ */
+void (*free_component)(__this__)
+{
+  free(this);
+}
+
+  
+/**
+ * Destructor that also frees the layout manager and children
+ */
+void (*free_everything_component)(__this__)
+{
+  long i = 0, n = this->children_count;
+  
+  if (this->layout_manager)
+    this->layout_manager->free(this->layout_manager);
+  
+  for (; i < n; i++)
+    (*(this->children + i))->free_everything(*(this->children + i));
+  
+  this->free(this);
+}
+
+
+/**
  * Constructor
  * 
  * @param  name  The name of the component
@@ -257,6 +283,8 @@ itk_component* itk_new_component(char* name)
   rc->add_child = add_child;
   rc->remove_child = remove_child;
   rc->remove_child_by_index = remove_child_by_index;
+  rc->free = free_component;
+  rc->free_everything = free_everything_component;
   return rc;
 }
 

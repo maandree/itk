@@ -76,6 +76,12 @@ typedef struct _itk_layout_manager
    */
   size2_t (*maximum_size)(__this__);
   
+  
+  /**
+   * Destructor
+   */
+  void (*free)(__this__);
+  
 } itk_layout_manager;
 
 #undef __this__

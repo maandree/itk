@@ -345,6 +345,19 @@ static size2_t preferred_size(__this__)
 
 
 /**
+ * Destructor
+ */
+static void free_dock_layout(__this__)
+{
+  itk_hash_table* hash_table = PREPARED(this);
+  if (hash_table)
+    itk_free_hash_table(hash_table, true, false);
+  free(this->data);
+  free(this);
+}
+
+
+/**
  * Constructor
  * 
  * A dock layout can use the following contraints:
@@ -369,22 +382,10 @@ itk_layout_manager* itk_new_dock_layout(itk_component* container)
   rc->minimum_size = minimum_size;
   rc->preferred_size = preferred_size;
   rc->maximum_size = maximum_size;
+  rc->free = free_dock_layout;
   CONTAINER(rc) = container;
   PREPARED(rc) = NULL;
   return rc;
-}
-
-
-/**
- * Destructor
- */
-void itk_free_dock_layout(__this__)
-{
-  itk_hash_table* hash_table = PREPARED(this);
-  if (hash_table)
-    itk_free_hash_table(hash_table, true, false);
-  free(this->data);
-  free(this);
 }
 
 

@@ -41,12 +41,6 @@ itk_layout_manager* itk_new_dock_layout(itk_component* container);
 
 
 /**
- * Destructor
- */
-void itk_free_dock_layout(itk_layout_manager* this);
-
-
-/**
  * Creates a complexer layout constraint that yeilds for later docked components
  * 
  * @param   anticlockwise  The number of components for which to yeild, that are position at the edge the 90° anticlockwise position
