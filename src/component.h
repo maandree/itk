@@ -192,6 +192,16 @@ typedef struct _itk_component
    */
   void (*free_everything)(__this__);
   
+  /**
+   * Forker
+   * 
+   * This function should be onioned with a function that
+   * forks, if neccessary, methods, `constraints` and elements
+   * in `children`, additionally, `layout_manager` should be
+   * forked and `name` should be changed.
+   */
+  struct _itk_component* (*fork)(__this__);
+  
 } itk_component;
 
 #undef __this__

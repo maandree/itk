@@ -238,6 +238,10 @@ static void remove_child_by_index(__this__, long child)
  */
 void free_component(__this__)
 {
+  if (this->children_count)
+    free(this->children);
+  if (this->buffer_count)
+    free(this->buffers);
   free(this);
 }
 
@@ -256,6 +260,31 @@ void free_everything_component(__this__)
     (*(this->children + i))->free_everything(*(this->children + i));
   
   this->free(this);
+}
+
+
+/**
+ * Forker
+ * 
+ * This function should be onioned with a function that
+ * forks, if neccessary, methods, `constraints` and elements
+ * in `children`, additionally, `layout_manager` should be
+ * forked and `name` should be changed.
+ */
+itk_component* fork_component(__this__)
+{
+  itk_component* rc = calloc(1, sizeof(itk_component));
+  *rc = *this;
+  if (rc->buffer_count && rc->buffers)
+    rc->buffers = calloc(rc->buffer_count, sizeof(void*));
+  if (rc->children_count && rc->children)
+    {
+      long i, n = rc->children_count;
+      rc->children = malloc(rc->children_count * sizeof(void*));
+      for (i = 0; i < n; i++)
+	*(rc->children + i) = *(this->children + i);
+    }
+  return rc;
 }
 
 
@@ -285,6 +314,7 @@ itk_component* itk_new_component(char* name)
   rc->remove_child_by_index = remove_child_by_index;
   rc->free = free_component;
   rc->free_everything = free_everything_component;
+  rc->fork = fork_component;
   return rc;
 }
 
