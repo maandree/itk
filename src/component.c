@@ -236,7 +236,7 @@ static void remove_child_by_index(__this__, long child)
 /**
  * Destructor
  */
-void (*free_component)(__this__)
+void free_component(__this__)
 {
   free(this);
 }
@@ -245,7 +245,7 @@ void (*free_component)(__this__)
 /**
  * Destructor that also frees the layout manager and children
  */
-void (*free_everything_component)(__this__)
+void free_everything_component(__this__)
 {
   long i = 0, n = this->children_count;
   
