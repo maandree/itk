@@ -103,7 +103,19 @@ typedef struct _itk_graphics
   void (*set_colour)(__this__, colour_t colour);
   
   
+  /**
+   * Draw a solid rectangle
+   * 
+   * @param  area  The rectangle to draw
+   */
   void (*fill_rectangle)(__this__, rectangle_t area);
+  
+  /**
+   * Draw a solid rectangle with rounded corners
+   * 
+   * @param  area      The rectangle to draw
+   * @param  arc_size  The size of the arc at the rounded corners
+   */
   void (*fill_rounded_rectangle)(__this__, rectangle_t area, size2_t arc_size);
   
   /**
@@ -128,11 +140,38 @@ typedef struct _itk_graphics
    *                      anti-clockwise.
    */
   void (*fill_arc)(__this__, rectangle_t area, float start_angle, float arc_angles);
+  
+  /**
+   * Draw a solid ellipse
+   * 
+   * @param  area  The rectangle the ellipse is scribed into
+   */
   void (*fill_oval)(__this__, rectangle_t area);
   
   
+  /**
+   * Draw a hollow rectangle
+   * 
+   * @param  area  The rectangle to draw
+   */
   void (*draw_rectangle)(__this__, rectangle_t area);
+  
+  /**
+   * Draw a hollow rectangle with rounded corners
+   * 
+   * @param  area      The rectangle to draw
+   * @param  arc_size  The size of the arc at the rounded corners
+   */
   void (*draw_rounded_rectangle)(__this__, rectangle_t area, size2_t arc_size);
+  
+  /**
+   * Draw an automatically closed hollow polygon
+   * 
+   * @param  points       Array of points from which the polygon is constructed
+   * @param  point_count  The number of elements in `points`
+   * @param  shape        The shape of the polygon, this is used to improve performance
+   * @param  mode         Whether the points are absolute or relative to the previous one
+   */
   void (*draw_polygon)(__this__, position2_t* points, long point_count, int8_t mode);
   
   /**
@@ -143,6 +182,13 @@ typedef struct _itk_graphics
    * @param  mode         Whether the points are absolute or relative to the previous one
    */
   void (*draw_polyline)(__this__, position2_t* points, long point_count, int8_t mode);
+  
+  /**
+   * Draw a single line segment
+   * 
+   * @param  start  The start point of the line segment
+   * @param  end    The end point of the line segment
+   */
   void (*draw_line)(__this__, position2_t start, position2_t end);
   
   /**
@@ -166,8 +212,21 @@ typedef struct _itk_graphics
    *                      anti-clockwise.
    */
   void (*draw_arc)(__this__, rectangle_t area, float start_angle, float arc_angles);
+  
+  /**
+   * Draw a hollow ellipse
+   * 
+   * @param  area  The rectangle the ellipse is scribed into
+   */
   void (*draw_oval)(__this__, rectangle_t area);
+  
+  /**
+   * Draw a single point
+   * 
+   * @param  point  The position of the point
+   */
   void (*draw_point)(__this__, position2_t point);
+  
   void (*draw_string)(__this__, position2_t point, char* text);
   
   
