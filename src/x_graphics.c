@@ -36,6 +36,25 @@
  */
 static void clip(__this__, rectangle_t area)
 {
+  rectangle_t old = DATA(this)->clip_area;
+  position_t x2 = old.x + old.width, y2 = old.y + old.height;
+  XRectangle rect;
+  XGCValues value;
+  
+  rect.x = old.x < area.x ? area.x : old.x;
+  rect.y = old.y < area.y ? area.y : old.y;
+  
+  XGetGCValues(DATA(this)->display, DATA(this)->context, GCClipXOrigin | GCClipYOrigin, &value);
+  
+  if (x2 > area.x + area.width)   x2 = area.x + area.width;
+  if (y2 > area.y + area.height)  y2 = area.y + area.height;
+  
+  rect.width = x2 < rect.x ? 0 : x2 - rect.x;
+  rect.height = y2 < rect.y ? 0 : y2 - rect.y;
+  XSetClipRectangles(DATA(this)->display,
+		     DATA(this)->context,
+		     value.clip_x_origin, value.clip_y_origin,
+		     &rect, 1, Unsorted);
 }
 
 
@@ -46,6 +65,12 @@ static void clip(__this__, rectangle_t area)
  */
 static void translate(__this__, position2_t offset)
 {
+  long mask = GCClipXOrigin | GCClipYOrigin;
+  XGCValues value;
+  XGetGCValues(DATA(this)->display, DATA(this)->context, mask, &value);
+  value.clip_x_origin += offset.x;
+  value.clip_y_origin += offset.y;
+  XChangeGC(DATA(this)->display, DATA(this)->context, mask, &value);
 }
 
 
@@ -53,6 +78,14 @@ static void translate(__this__, position2_t offset)
  * Set this graphics context's current drawing colour
  */
 static void set_colour(__this__, colour_t colour)
+{
+}
+
+
+/**
+ * Set this graphics context's current background colour
+ */
+static void set_background_colour(__this__, colour_t colour)
 {
 }
 
@@ -99,8 +132,38 @@ static void fill_polygon(__this__, position2_t* points, long point_count, int8_t
  *                      negative, the arc is drawn clockwise, otherwise it is drawn
  *                      anti-clockwise.
  */
-static void fill_arc(__this__, rectangle_t area, float start_angle, float arc_angles)
+static void fill_pie(__this__, rectangle_t area, float start_angle, float arc_angles)
 {
+  if (DATA(this)->chord_mode)
+    {
+      XSetArcMode(DATA(this)->display, DATA(this)->context, ArcPieSlice);
+      DATA(this)->chord_mode = false;
+    }
+  XFillArc(DATA(this)->display,
+	   DATA(this)->drawable,
+	   DATA(this)->context,
+	   area.x, area.y, area.width, area.height,
+	   (int)(start_angle * 64 + 0.5), (int)(arc_angles * 64 + 0.5));
+}
+
+/**
+ * Draw solid arc chord
+ * 
+ * @param  area         The rectangle the sliced circles is scribed into
+ * @param  start_angle  The start of the arc, the number of degrees, anti-clockwise
+ *                      from the three-o'clock position.
+ * @param  arc_angles   The number of degrees between the arc start and arc end.
+ *                      The magnitude if this value is truncated to 360. If it is
+ *                      negative, the arc is drawn clockwise, otherwise it is drawn
+ *                      anti-clockwise.
+ */
+static void fill_chord(__this__, rectangle_t area, float start_angle, float arc_angles)
+{
+  if (DATA(this)->chord_mode == false)
+    {
+      XSetArcMode(DATA(this)->display, DATA(this)->context, ArcChord);
+      DATA(this)->chord_mode = true;
+    }
   XFillArc(DATA(this)->display,
 	   DATA(this)->drawable,
 	   DATA(this)->context,
@@ -118,14 +181,7 @@ static void fill_arc(__this__, rectangle_t area, float start_angle, float arc_an
  */
 static void draw_polyline(__this__, position2_t* points, long point_count, int8_t mode)
 {
-  if (point_count == 1)
-    {
-      XDrawPoint(DATA(this)->display,
-		 DATA(this)->drawable,
-		 DATA(this)->context,
-		 points->x, points->y);
-    }
-  else if (point_count > 1)
+  if (point_count > 1)
     {
       XPoint* x_points = alloca(point_count * sizeof(XPoint));
       long i;
@@ -142,6 +198,11 @@ static void draw_polyline(__this__, position2_t* points, long point_count, int8_
 		 x_points, point_count,
 		 mode == ITK_GRAPHICS_MODE_RELATIVE ? CoordModePrevious : CoordModeOrigin);
     }
+  else if (point_count == 1)
+    XDrawPoint(DATA(this)->display,
+	       DATA(this)->drawable,
+	       DATA(this)->context,
+	       points->x, points->y);
 }
 
 
@@ -203,6 +264,9 @@ static void draw_string(__this__, position2_t point, char* text)
  */
 static void free_xgc(__this__)
 {
+  if (this->data)
+    free(this->data);
+  free(this);
 }
 
 
@@ -211,5 +275,129 @@ static void free_xgc(__this__)
  */
 static itk_graphics* fork_xgc(__this__)
 {
+  itk_graphics* rc = malloc(sizeof(itk_graphics));
+  *rc = *this;
+  if (rc->data)
+    {
+      GC context;
+      rc->data = malloc(sizeof(itk_x_graphics_data));
+      *(DATA(rc)) = *(DATA(this));
+      XCopyGC(DATA(rc)->display, DATA(this)->context, ~0, context);
+      DATA(rc)->context = context;
+    }
+  return rc;
+}
+
+
+#ifdef USE_REDUDENT_X_GRAPHICS
+
+
+/**
+ * Draw a solid rectangle
+ * 
+ * @param  area  The rectangle to draw
+ */
+void fill_rectangle(__this__, rectangle_t area)
+{
+  XFillRectangle(DATA(this)->display,
+		 DATA(this)->drawable,
+		 DATA(this)->context,
+		 area.x, area.y,
+		 area.width, area.height);
+}
+
+
+/**
+ * Draw a hollow rectangle
+ * 
+ * @param  area  The rectangle to draw
+ */
+void draw_rectangle(__this__, rectangle_t area)
+{
+  XDrawRectangle(DATA(this)->display,
+		 DATA(this)->drawable,
+		 DATA(this)->context,
+		 area.x, area.y,
+		 area.width, area.height);
+}
+
+
+/**
+ * Draw a single line segment
+ * 
+ * @param  start  The start point of the line segment
+ * @param  end    The end point of the line segment
+ */
+void draw_line(__this__, position2_t start, position2_t end)
+{
+  XDrawLine(DATA(this)->display,
+	    DATA(this)->drawable,
+	    DATA(this)->context,
+	    start.x, start.y,
+	    end.x, end.y);
+}
+
+
+/**
+ * Draw a single point
+ * 
+ * @param  point  The position of the point
+ */
+void draw_point(__this__, position2_t point)
+{
+  XDrawPoint(DATA(this)->display,
+	     DATA(this)->drawable,
+	     DATA(this)->context,
+	     point.x, point.y);
+}
+
+
+#endif
+
+
+/**
+ * Constructor
+ * 
+ * @param  display   The X display, a connection to the X server
+ * @param  screen    The screen the component is located in
+ * @param  drawable  The component that is begin drawn on
+ */
+itk_graphics* itk_new_x_graphics(Display* display, int screen, Drawable drawable)
+{
+  itk_graphics* rc = calloc(1, sizeof(itk_graphics));
+  itk_x_graphics_data* data = rc->data = malloc(sizeof(itk_x_graphics_data));
+  
+#define __(FUNC)  rc->FUNC = FUNC
+  __(clip);
+  __(translate);
+  __(set_colour);
+  __(set_background_colour);
+  __(fill_polygon);
+  __(fill_pie);
+  __(fill_chord);
+  __(draw_polyline);
+  __(draw_lines);
+  __(draw_arc);
+  __(draw_string);
+#ifdef USE_REDUDENT_X_GRAPHICS
+  __(fill_rectangle);
+  __(draw_rectangle);
+  __(draw_line);
+  __(draw_point);
+#endif
+#undef __
+  
+  rc->free = free_xgc;
+  rc->fork = fork_xgc;
+  
+  data->display = display;
+  data->drawable = drawable;
+  data->context = DefaultGC(display, screen);
+  data->clip_area.x = data->clip_area.y = 0;
+  data->clip_area.width = data->clip_area.height = (1 << 16) - 1;
+  data->chord_mode = false;
+  
+  itk_graphics_derive_methods(rc);
+  return rc;
 }
 

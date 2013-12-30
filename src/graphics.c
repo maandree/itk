@@ -86,10 +86,10 @@ static void fill_rounded_rectangle(__this__, rectangle_t area, size2_t arc_size)
 #define right   (area.width - arc_size.width * 2)
 #define bottom  (area.height - arc_size.height * 2)
   
-  this->fill_arc(this, arc_rect(0,     0),       90.f, 90.f);
-  this->fill_arc(this, arc_rect(0,     bottom), 180.f, 90.f);
-  this->fill_arc(this, arc_rect(right, bottom), 270.f, 90.f);
-  this->fill_arc(this, arc_rect(right, 0),        0.f, 90.f);
+  this->fill_pie(this, arc_rect(0,     0),       90.f, 90.f);
+  this->fill_pie(this, arc_rect(0,     bottom), 180.f, 90.f);
+  this->fill_pie(this, arc_rect(right, bottom), 270.f, 90.f);
+  this->fill_pie(this, arc_rect(right, 0),        0.f, 90.f);
   
   this->fill_rectangle(this, new_rectangle(area.x, area.y + arc_size.height, area.width, bottom));
   this->fill_rectangle(this, new_rectangle(area.x + arc_size.width, area.y, right, arc_size.height));
@@ -109,7 +109,7 @@ static void fill_rounded_rectangle(__this__, rectangle_t area, size2_t arc_size)
  */
 static void fill_oval(__this__, rectangle_t area)
 {
-  this->fill_arc(this, area, 0.f, 360.f);
+  this->fill_pie(this, area, 0.f, 360.f);
 }
 
 

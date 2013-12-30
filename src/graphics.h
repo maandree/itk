@@ -102,6 +102,11 @@ typedef struct _itk_graphics
    */
   void (*set_colour)(__this__, colour_t colour);
   
+  /**
+   * Set this graphics context's current background colour
+   */
+  void (*set_background_colour)(__this__, colour_t colour);
+  
   
   /**
    * Draw a solid rectangle
@@ -139,7 +144,20 @@ typedef struct _itk_graphics
    *                      negative, the arc is drawn clockwise, otherwise it is drawn
    *                      anti-clockwise.
    */
-  void (*fill_arc)(__this__, rectangle_t area, float start_angle, float arc_angles);
+  void (*fill_pie)(__this__, rectangle_t area, float start_angle, float arc_angles);
+  
+  /**
+   * Draw solid arc chord
+   * 
+   * @param  area         The rectangle the sliced circles is scribed into
+   * @param  start_angle  The start of the arc, the number of degrees, anti-clockwise
+   *                      from the three-o'clock position.
+   * @param  arc_angles   The number of degrees between the arc start and arc end.
+   *                      The magnitude if this value is truncated to 360. If it is
+   *                      negative, the arc is drawn clockwise, otherwise it is drawn
+   *                      anti-clockwise.
+   */
+  void (*fill_chord)(__this__, rectangle_t area, float start_angle, float arc_angles);
   
   /**
    * Draw a solid ellipse

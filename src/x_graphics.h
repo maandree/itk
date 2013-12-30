@@ -44,7 +44,27 @@ typedef struct _itk_x_graphics_data
    */
   GC context;
   
+  /**
+   * The current clip area
+   */
+  rectangle_t clip_area;
+  
+  /**
+   * Whether the current arc mode is arc chord
+   */
+  bool_t chord_mode;
+  
 } itk_x_graphics_data;
+
+
+/**
+ * Constructor
+ * 
+ * @param  display   The X display, a connection to the X server
+ * @param  screen    The screen the component is located in
+ * @param  drawable  The component that is begin drawn on
+ */
+itk_graphics* itk_new_x_graphics(Display* display, int screen, Drawable drawable);
 
 
 #endif
