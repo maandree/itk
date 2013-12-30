@@ -25,7 +25,7 @@ Planned features:
 •  Components can be forked an put in a split pane
 •  Key strokes can be broadcasted to multiple input fields
 •  Text fields can have multiple text cursors from one keyboard
-•  Text combining from labels and other non-textfield components
+•  Text copying from labels and other non-textfield components
 •  Framebuffer support
 •  X11 support
 •  Wayland support
