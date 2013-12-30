@@ -15,14 +15,14 @@ Planned features:
 •  Focus navigation with arrow keys
 •  Tabs are navigateable with the keyboard
 •  Default key combinations defined as in Emacs
-*  By default text fields works like in Emacs
+•  By default text fields works like in Emacs
 •  Everything is reconfigureable globally
 •  Everything is reconfigureable per program
 •  Everything is reconfigureable per instance
-•  Components can be arranged or rearranged to for tabbed panes
+•  Components can be arranged or rearranged to tabbed panes
 •  Splits combines even vertical and horizontal
 •  Splits are resizable with the keyboard
-•  Components can be forked to for but in a split
+•  Components can be forked an put in a split pane
 •  Key strokes can be broadcasted to multiple input fields
 •  Text fields can have multiple text cursors from one keyboard
 •  Text combining from labels and other non-textfield components
