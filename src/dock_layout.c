@@ -22,19 +22,174 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 #define __this__  struct _itk_layout_manager* this
 
 #define CONTAINER(layout)  *((void**)(layout->data) + 0)
 #define PREPARED(layout)   *((void**)(layout->data) + 1)
+#define MIN(a, b)          ((a) < (b) ? (a) : (b))
 
+
+/**
+ * Move to heap, but undefine if area is zero
+ * 
+ * @param   x       The position on the horizontal axis
+ * @param   y       The position on the vertical axis
+ * @param   width   The width
+ * @param   height  The height
+ * @return          The area, but `NULL` if the width or height is zero
+ */
+rectangle_t* nonzero(position_t x, position_t y, dimension_t width, dimension_t height)
+{
+  rectangle_t* rc = malloc(sizeof(rectangle_t));
+  rectangle_t area = new_rectangle(x, y, width, height);
+  *rc = area;
+  if ((area.width <= 0) || (area.height <= 0))
+    rc->defined = false;
+  return rc;
+}
+
+
+/**
+ * Prepare the layout manager for locating of multiple components, probably all of them
+ * 
+ * @param  mode  0 for normal, 1 for minimum size, 2 for maximum size, 3 for preferred size
+ */
+static void prepare_(__this__, mode)
+{
+  itk_hash_table* prepared = PREPARED(this);
+  itk_component* container = CONTAINER(this);
+  
+  position_t x = 0, y = 0;
+  dimension_t w = container->size.width;
+  dimension_t h = container->size.height;
+  
+  long children_count = container->children_count;
+  itk_component** children = container->children;
+  long children_ptr = 0;
+  
+  long yeild_left_head   = 0, yeild_left_tail   = 0;
+  long yeild_top_head    = 0, yeild_top_tail    = 0;
+  long yeild_right_head  = 0, yeild_right_tail  = 0;
+  long yeild_bottom_head = 0, yeild_bottom_tail = 0;
+  
+  itk_component** yeilds       = alloca(4 * children_count * sizeof(itk_component*));
+  itk_component** yeild_left   = yeilds      + children_count;
+  itk_component** yeild_top    = yeild_left  + children_count;
+  itk_component** yeild_right  = yeild_top   + children_count;
+  itk_component** yeild_bottom = yeild_right + children_count;
+  
+  if (mode)
+    w = h = (1 << (sizeof(dimension_t) / sizeof(int8_t) - 1)) - 1;
+  
+#define __EDGE(EDGE, PUT, IS_LOW, FIRST, SECOND, SAME, PERP, PERP_EDGE, AXIS, HORZ) \
+  ({									\
+    if (strstr(constraints, #EDGE))					\
+      {									\
+	dimension_t _ = MIN(SAME, HORZ ? child_width : child_height);	\
+	dimension_t S = PERP;						\
+	position_t P = HORZ ? y : x;					\
+	while (yeild_##EDGE##_head && (_ > 0))				\
+	  {								\
+	    itk_component* yeilded = *(yeild_##EDGE + yeild_##EDGE##_tail++); \
+	    if ((r = itk_hash_table_get(prepared, yeilded)))		\
+	      if (r->defined)						\
+		{							\
+		  position_t yx = r->x, yy = r->y;			\
+		  dimension_t yw = r->width, yh = r->height;		\
+		  if (HORZ)						\
+		    r = nonzero(yx + IS_LOW * _, yy, yw - _, yh);	\
+		  else							\
+		    r = nonzero(yx, yy + IS_LOW * _, yw, yh - _);	\
+		  itk_hash_table_put(prepared, yeilded, r);		\
+		  S += y##PERP;						\
+		  if (strstr(yeilded->constraints, #PERP_EDGE))		\
+		    P -= y##PERP;					\
+		}							\
+	  }								\
+	itk_hash_table_put(prepared, child, HORZ ? nonzero(PUT, P, _, S) : nonzero(P, PUT, S, _)); \
+	if (IS_LOW)							\
+	  AXIS += _;							\
+	SAME -= _;							\
+	if (r->defined && !strcmp(constraints, #EDGE))			\
+	  {								\
+	    long n = strstr(constraints, " ") - constraints;		\
+	    char* FIRST##_ = alloca((n + 1) * sizeof(char));		\
+	    char* SECOND##_ = strstr(strstr(constraints, " ") + 1, " ") + 1; \
+	    long i, FIRST, SECOND;					\
+	    for (i = 0; i < n; i++)					\
+	      *(FIRST##_ + i) = *(constraints + i);			\
+	    *(FIRST##_ + n) = 0;					\
+	    FIRST = atol(FIRST##_);					\
+	    SECOND = atol(SECOND##_);					\
+	    for (i = 0; i < FIRST; i++)					\
+	      *(yeild_##FIRST + yeild_##FIRST##_head++) = child;	\
+	    for (i = 0; i < SECOND; i++)				\
+	      *(yeild_##SECOND + yeild_##SECOND##_head++) = child;	\
+	  }								\
+	continue;							\
+      }									\
+  })
+  
+  for (; children_ptr < children_count; children_ptr++)
+    {
+      itk_component* child = *(children + children_ptr);
+      char* constraints = child->constraints;
+      rectangle_t* r;
+      if (constraints)
+	{
+	  size2_t child_size =
+	    mode == 0 ? child->preferred_size :
+	    mode == 1 ? child->minimum_size   :
+	    mode == 2 ? child->maximum_size   :
+			child->preferred_size;
+	  dimension_t child_width  = child_size.width;
+	  dimension_t child_height = child_size.height;
+	  
+	  if ((child_width | child_height) < 0)
+	    {
+	      itk_hash_table_put(prepared, child, nonzero(x, y, -1, -1));
+	      continue;
+	    }
+	  
+	  __EDGE(left, x, 1, bottom, top, w, h, top, x, 1);
+	  __EDGE(top, y, 1, left, right, h, w, left, y, 0);
+	  __EDGE(right, x + w - _, 0, top, bottom, w, h, top, x, 1);
+	  __EDGE(bottom, y + h - _, 0, right, left, h, w, left, y, 0);
+	  
+	  {
+	    long n = strstr(constraints, " ") - constraints;
+	    char* x_ = alloca((n + 1) * sizeof(char));
+	    char* y_ = constraints + n + 1;
+	    if (strstr(y_, " ") == NULL)
+	      {
+		long i;
+		position_t x, y;
+		for (i = 0; i < n; i++)
+		  *(x_ + i) = *(constraints + i);
+		*(x_ + n) = 0;
+		x = (position_t)atoll(x_);
+		y = (position_t)atoll(y_);
+		itk_hash_table_put(prepared, child, nonzero(x, y, child_width, child_height));
+		continue;
+	      }
+	  }
+	}
+      itk_hash_table_put(prepared, child, nonzero(x, y, w, h)); /* contraint == "center" */
+      w = h = 0;
+    }
+  
+  PREPARED(this) = itk_new_hash_table();
+}
 
 /**
  * Prepare the layout manager for locating of multiple components, probably all of them
  */
 static void prepare(__this__)
 {
+  prepare_(this, 0);
 }
 
 /**
@@ -44,7 +199,7 @@ static void done(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table);
+    itk_free_hash_table(hash_table, true, false);
   PREPARED(this) = NULL;
 }
 
@@ -117,6 +272,7 @@ static size2_t maximum_size(__this__)
  *     • "center" — Fill the centre
  *     • "centre" — Fill the centre (perhaps you perfer nouns)
  *     • An output of `itk_dock_layout_yeild`
+ *     • "%x %y"  — Absolute position of the component
  * 
  * @param  container  The container which uses the layout manager
  */
@@ -143,7 +299,7 @@ void itk_free_dock_layout(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table);
+    itk_free_hash_table(hash_table, true, false);
   free(this->data);
   free(this);
 }

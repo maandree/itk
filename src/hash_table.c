@@ -103,25 +103,28 @@ itk_hash_table* itk_new_hash_table_fine_tuned(long initial_capacity, float load_
 
 /**
  * Destructor
+ * 
+ * @param  values  Whether to free all stored values
+ * @param  keys    Whether to free all stored keys
  */
-void itk_free_hash_table(__this__)
+void itk_free_hash_table(__this__, bool_t values, bool_t keys)
 {
-  itk_hash_entry** buf = alloca((this->size + 1) * sizeof(itk_hash_entry*));
-  long i = this->capacity, ptr;
+  long i = this->capacity;
   itk_hash_entry* bucket;
+  itk_hash_entry* last;
   
   while (i)
     {
       bucket = *(this->buckets + --i);
-      ptr = 0;
-      *(buf + ptr++) = bucket;
       while (bucket)
 	{
-	  bucket = bucket->next;
-	  *(buf + ptr++) = bucket;
+	  if (values)
+	    free(bucket->value);
+	  if (keys)
+	    free(bucket->key);
+	  bucket = (last = bucket)->next;
+	  free(last);
 	}
-      while (ptr)
-	free(*(buf + --ptr));
     }
   
   free(this->buckets);
