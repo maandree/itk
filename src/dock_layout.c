@@ -25,7 +25,7 @@
 #include <string.h>
 
 
-#define __this__  struct _itk_layout_manager* this
+#define __this__  itk_layout_manager* this
 
 #define CONTAINER(layout)  *((void**)(layout->data) + 0)
 #define PREPARED(layout)   *((void**)(layout->data) + 1)
@@ -213,7 +213,7 @@ static void done(__this__)
  * @param   child  The child, to the component using the layout manager, of interest
  * @return         The rectangle the child is confound in
  */
-static rectangle_t locate(__this__, struct _itk_component* child)
+static rectangle_t locate(__this__, itk_component* child)
 {
   rectangle_t* r;
   bool_t p = PREPARED(this) == NULL;

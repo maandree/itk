@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "x_graphics.h"
+#include "itkmacros.h"
 
 #include <stdlib.h>
 
@@ -79,6 +80,7 @@ static void translate(__this__, position2_t offset)
  */
 static void set_colour(__this__, colour_t colour)
 {
+  /* TODO x_graphics.set_colour */
 }
 
 
@@ -87,6 +89,7 @@ static void set_colour(__this__, colour_t colour)
  */
 static void set_background_colour(__this__, colour_t colour)
 {
+  /* TODO x_graphics.set_background_colour */
 }
 
 
@@ -256,6 +259,7 @@ static void draw_arc(__this__, rectangle_t area, float start_angle, float arc_an
 
 static void draw_string(__this__, position2_t point, char* text)
 {
+  /* TODO x_graphics.draw_string */
 }
 
 
