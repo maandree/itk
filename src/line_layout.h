@@ -24,13 +24,35 @@
 
 
 /**
+ * Components are added to the right side of the previous component
+ */
+#define ORIENTATION_LEFT_TO_RIGHT  0
+
+/**
+ * Components are added to the left side of the previous component
+ */
+#define ORIENTATION_RIGHT_TO_LEFT  1
+
+/**
+ * Components are added beneath the previous component
+ */
+#define ORIENTATION_TOP_DOWN       2
+
+/**
+ * Components are added on top of the previous component
+ */
+#define ORIENTATION_BOTTOM_UP      3
+
+
+
+/**
  * Constructor
  * 
- * @param  container      The container which uses the layout manager
- * @param  is_horizontal  Whether the components are lined up horizontally
- * @param  gap            The size of the gap between components
+ * @param  container    The container which uses the layout manager
+ * @param  orientation  Whether the components are lined up horizontally
+ * @param  gap          The size of the gap between components
  */
-itk_layout_manager* itk_new_line_layout(itk_component* container, bool_t is_horizontal, dimension_t gap);
+itk_layout_manager* itk_new_line_layout(itk_component* container, int8_t orientation, dimension_t gap);
 
 
 #endif

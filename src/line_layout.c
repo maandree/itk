@@ -23,15 +23,17 @@
 #include <stdlib.h>
 
 
-#define __this__  itk_layout_manager* this
+#define __this__  struct _itk_layout_manager* this
 
 #define CONTAINER_(layout)  *((void**)(layout->data) + 0)
 #define PREPARED_(layout)   *((void**)(layout->data) + 1)
 #define GAP_(layout)        *((void**)(layout->data) + 2)
+#define BUF_(layout)        *((void**)(layout->data) + 3)
 
 #define CONTAINER(layout)   ((itk_component*)(CONTAINER_(layout)))
 #define PREPARED(layout)    ((itk_hash_table*)(PREPARED_(layout)))
 #define GAP(layout)         *((dimension_t*)(GAP_(layout)))
+#define BUF(layout)         ((rectangle_t*)(BUF_(layout)))
 
 
 /**
@@ -41,6 +43,53 @@ static void prepare_h(__this__)
 {
   itk_hash_table* prepared = PREPARED_(this) = itk_new_hash_table();
   itk_component* container = CONTAINER(this);
+  long i, n;
+  if ((n = container->children_count))
+    {
+      itk_component** children = container->children;
+      rectangle_t* buf = BUF_(this) = malloc(n * sizeof(rectangle_t));
+      dimension_t gap = GAP(this);
+      dimension_t height = container->size.height;
+      dimension_t width = container->size.width - gap * (n - 1);
+      position_t x = 0;
+      for (i = 0; i < n; i++)
+	{
+	  if (((buf + i)->width = (*(children + i))->minimum_size.width) < 0)
+	    (buf + i)->width = 0;
+	  width -= (buf + i)->width;
+	}
+      while (width > 0)
+	{
+	  itk_component* child;
+	  itk_component* end = children + n;
+	  long can_grow = 0;
+	  for (child = children; child != end; child++)
+	    if ((buf + i)->width < child->preferred_size.width)
+	      can_grow++;
+	  if (can_grow)
+	    {
+	      dimension_t increment = width / can_grow, max, now;
+	      if (increment == 0)
+		increment = 1;
+	      for (child = children; (child != end) && width; child++)
+		if ((now = (buf + i)->width) < (max = child->preferred_size.width))
+		  {
+		    dimension_t soon = now + increment;
+		    (buf + i)->width = soon < max ? soon : max;
+		    width -= (buf + i)->width - now;
+		  }
+	    }
+	}
+      for (i = 0; i < n; i++)
+	{
+	  itk_hash_table_put(prepared, *(children + i), buf + i);
+	  (buf + i)->defined = true;
+	  (buf + i)->height = height;
+	  (buf + i)->y = 0;
+	  (buf + i)->x = x;
+	  x += gap + (buf + i)->width;
+	}
+    }
 }
 
 
@@ -51,6 +100,87 @@ static void prepare_v(__this__)
 {
   itk_hash_table* prepared = PREPARED_(this) = itk_new_hash_table();
   itk_component* container = CONTAINER(this);
+  long i, n;
+  if ((n = container->children_count))
+    {
+      itk_component** children = container->children;
+      rectangle_t* buf = BUF_(this) = malloc(n * sizeof(rectangle_t));
+      dimension_t gap = GAP(this);
+      dimension_t height = container->size.height - gap * (n - 1);
+      dimension_t width = container->size.width;
+      position_t y = 0;
+      for (i = 0; i < n; i++)
+	{
+	  if (((buf + i)->height = (*(children + i))->minimum_size.height) < 0)
+	    (buf + i)->height = 0;
+	  height -= (buf + i)->height;
+	}
+      while (height > 0)
+	{
+	  itk_component* child;
+	  itk_component* end = children + n;
+	  long can_grow = 0;
+	  for (child = children; child != end; child++)
+	    if ((buf + i)->height < child->preferred_size.height)
+	      can_grow++;
+	  if (can_grow)
+	    {
+	      dimension_t increment = height / can_grow, max, now;
+	      if (increment == 0)
+		increment = 1;
+	      for (child = children; (child != end) && height; child++)
+		if ((now = (buf + i)->height) < (max = child->preferred_size.height))
+		  {
+		    dimension_t soon = now + increment;
+		    (buf + i)->height = soon < max ? soon : max;
+		    height -= (buf + i)->height - now;
+		  }
+	    }
+	}
+      for (i = 0; i < n; i++)
+	{
+	  itk_hash_table_put(prepared, *(children + i), buf + i);
+	  (buf + i)->defined = true;
+	  (buf + i)->width = width;
+	  (buf + i)->y = y;
+	  (buf + i)->x = 0;
+	  y += gap + (buf + i)->height;
+	}
+    }
+}
+
+
+/**
+ * Prepare the layout manager for locating of multiple components, probably all of them
+ */
+static void prepare_hr(__this__)
+{
+  itk_component* container = CONTAINER(this);
+  long i, n;
+  if ((n = container->children_count))
+    {
+      rectangle_t* buf = BUF(this);
+      dimension_t width = container->size.width;
+      for (i = 0; i < n; i++)
+	(buf + i)->x = width - (buf + i)->x - (buf + i)->width;
+    }
+}
+
+
+/**
+ * Prepare the layout manager for locating of multiple components, probably all of them
+ */
+static void prepare_vr(__this__)
+{
+  itk_component* container = CONTAINER(this);
+  long i, n;
+  if ((n = container->children_count))
+    {
+      rectangle_t* buf = BUF(this);
+      dimension_t height = container->size.height;
+      for (i = 0; i < n; i++)
+	(buf + i)->y = height - (buf + i)->y - (buf + i)->height;
+    }
 }
 
 
@@ -61,8 +191,11 @@ static void done(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table, true, false);
+    itk_free_hash_table(hash_table, false, false);
   PREPARED_(this) = NULL;
+  if (BUF(this))
+    free(BUF_(this));
+  BUF_(this) = NULL;
 }
 
 
@@ -294,8 +427,10 @@ static void free_line_layout(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table, true, false);
+    itk_free_hash_table(hash_table, false, false);
   free(GAP_(this));
+  if (BUF(this))
+    free(BUF_(this));
   free(this->data);
   free(this);
 }
@@ -304,16 +439,21 @@ static void free_line_layout(__this__)
 /**
  * Constructor
  * 
- * @param  container      The container which uses the layout manager
- * @param  is_horizontal  Whether the components are lined up horizontally
- * @param  gap            The size of the gap between components
+ * @param  container    The container which uses the layout manager
+ * @param  orientation  Whether the components are lined up horizontally
+ * @param  gap          The size of the gap between components
  */
-itk_layout_manager* itk_new_line_layout(itk_component* container, bool_t is_horizontal, dimension_t gap)
+itk_layout_manager* itk_new_line_layout(itk_component* container, int8_t orientation, dimension_t gap)
 {
   itk_layout_manager* rc = malloc(sizeof(itk_layout_manager));
   dimension_t* gap_ = malloc(sizeof(dimension_t));
-  rc->data = malloc(3 * sizeof(void*));
-  rc->prepare        = is_horizontal ? prepare_h        : prepare_v;
+  bool_t is_horizontal = orientation < 2;
+  bool_t is_reversed = orientation & 1;
+  rc->data = malloc(4 * sizeof(void*));
+  if (is_reversed)
+    rc->prepare      = is_horizontal ? prepare_hr : prepare_vr;
+  else
+    rc->prepare      = is_horizontal ? prepare_h  : prepare_v;
   rc->done           = done;
   rc->locate         = locate;
   rc->minimum_size   = is_horizontal ? minimum_size_h   : minimum_size_v;
@@ -324,6 +464,7 @@ itk_layout_manager* itk_new_line_layout(itk_component* container, bool_t is_hori
   PREPARED_(rc) = NULL;
   GAP_(rc) = gap_;
   GAP(rc) = gap;
+  BUF_(rc) = NULL;
   return rc;
 }
 
