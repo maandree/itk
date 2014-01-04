@@ -62,17 +62,26 @@ static void done(__this__)
  */
 static rectangle_t locate(__this__, itk_component* child)
 {
-  size2_t c = CONTAINER(this)->size;
-  position_t x = LEFT(this), y = TOP(this);
-  dimension_t w = c.width - RIGHT(this);
-  dimension_t h = c.height - BOTTOM(this);
-  if ((w | h) < 0)
+  if (child->visible)
     {
-      w = c.width;
-      h = c.height;
-      x = y = 0;
+      size2_t c = CONTAINER(this)->size;
+      position_t x = LEFT(this), y = TOP(this);
+      dimension_t w = c.width - RIGHT(this);
+      dimension_t h = c.height - BOTTOM(this);
+      if ((w | h) < 0)
+	{
+	  w = c.width;
+	  h = c.height;
+	  x = y = 0;
+	}
+      return new_rectangle(x, y, w, h);
     }
-  return new_rectangle(x, y, w, h);
+  else
+    {
+      rectangle_t rc;
+      rc.defined = false;
+      return rc;
+    }
 }
 
 
@@ -89,12 +98,13 @@ static size2_t minimum_size(__this__)
   rc.width = rc.height = 0;
   rc.defined = true;
   for (i = 0; i < n; i++)
-    {
-      if (rc.width < (*(children + i))->minimum_size.width)
-	rc.width = (*(children + i))->minimum_size.width;
-      if (rc.height < (*(children + i))->minimum_size.height)
-	rc.height = (*(children + i))->minimum_size.height;
-    }
+    if ((*(children + i))->visible)
+      {
+	if (rc.width < (*(children + i))->minimum_size.width)
+	  rc.width = (*(children + i))->minimum_size.width;
+	if (rc.height < (*(children + i))->minimum_size.height)
+	  rc.height = (*(children + i))->minimum_size.height;
+      }
   return rc;
 }
 
@@ -112,13 +122,14 @@ static size2_t maximum_size(__this__)
   rc.width = rc.height = UNBOUNDED;
   rc.defined = true;
   for (i = 0; i < n; i++)
-    {
-      t = (*(children + i))->maximum_size;
-      if (((rc.width < 0) || (rc.width > t.width)) && (t.width >= 0))
-	rc.width = t.width;
-      if (((rc.height < 0) || (rc.height > t.height)) && (t.height >= 0))
-	rc.height = t.height;
-    }
+    if ((*(children + i))->visible)
+      {
+	t = (*(children + i))->maximum_size;
+	if (((rc.width < 0) || (rc.width > t.width)) && (t.width >= 0))
+	  rc.width = t.width;
+	if (((rc.height < 0) || (rc.height > t.height)) && (t.height >= 0))
+	  rc.height = t.height;
+      }
   return rc;
 }
 
@@ -136,12 +147,13 @@ static size2_t preferred_size(__this__)
   rc.width = rc.height = 0;
   rc.defined = true;
   for (i = 0; i < n; i++)
-    {
-      if (rc.width < (*(children + i))->preferred_size.width)
-	rc.width = (*(children + i))->preferred_size.width;
-      if (rc.height < (*(children + i))->preferred_size.height)
-	rc.height = (*(children + i))->preferred_size.height;
-    }
+    if ((*(children + i))->visible)
+      {
+	if (rc.width < (*(children + i))->preferred_size.width)
+	  rc.width = (*(children + i))->preferred_size.width;
+	if (rc.height < (*(children + i))->preferred_size.height)
+	  rc.height = (*(children + i))->preferred_size.height;
+      }
   return rc;
 }
 
