@@ -24,17 +24,39 @@
 
 #define __this__  itk_hash_table* this
 
+/**
+ * Test if a key matches the key in a bucket
+ * 
+ * @param  T  The instance of the hash table
+ * @param  B  The bucket
+ * @param  K  The key
+ * @param  H  The hash of the key
+ */
+#define TEST_KEY(T, B, K, H) \
+  ((B->key == K) || (T->key_comparator && (B->hash == H) && T->key_comparator(B->key, K)))
+
 
 /**
- * Calculate the hash of a key and constrain it to the buckets
+ * Calculate the hash of a key
+ * 
+ * @param   key  The key to hash
+ * @return       The hash of the key
+ */
+static inline long hash(__this__, void* key)
+{
+  return this->hasher ? this->hasher(key) : (long)key;
+}
+
+
+/**
+ * Truncates the hash of a key to constrain it to the buckets
  * 
  * @param   key  The key to hash
  * @return       A non-negative value less the the table's capacity
  */
-static inline long hash(__this__, void* key)
+static inline long truncate_hash(__this__, long hash)
 {
-  long rc = this->hasher ? this->hasher(key) : (long)key;
-  rc %= this->capacity;
+  long rc = hash % this->capacity;
   return rc < 0 ? -rc : rc;
 }
 
@@ -60,7 +82,7 @@ static void rehash(__this__)
       bucket = *(this->buckets + --i);
       while (bucket)
 	{
-	  index = hash(this, bucket->key);
+	  index = truncate_hash(this, bucket->hash);
 	  if ((destination = *(this->buckets + index)))
 	    {
 	      next = destination->next;
@@ -168,14 +190,13 @@ bool_t itk_hash_table_contains_value(__this__, void* value)
  */
 bool_t itk_hash_table_contains_key(__this__, void* key)
 {
-  long index = hash(this, key);
+  long key_hash = hash(this, key);
+  long index = truncate_hash(this, key_hash);
   itk_hash_entry* bucket = *(this->buckets + index);
   
   while (bucket)
     {
-      if (bucket->key == key)
-	return true;
-      if (this->key_comparator && this->key_comparator(bucket->key, key))
+      if (TEST_KEY(this, bucket, key, key_hash))
 	return true;
       bucket = bucket->next;
     }
@@ -192,12 +213,13 @@ bool_t itk_hash_table_contains_key(__this__, void* key)
  */
 void* itk_hash_table_get(__this__, void* key)
 {
-  long index = hash(this, key);
+  long key_hash = hash(this, key);
+  long index = truncate_hash(this, key_hash);
   itk_hash_entry* bucket = *(this->buckets + index);
   
   while (bucket)
     {
-      if ((bucket->key == key) || (this->key_comparator && this->key_comparator(bucket->key, key)))
+      if (TEST_KEY(this, bucket, key, key_hash))
 	return bucket->value;
       bucket = bucket->next;
     }
@@ -215,12 +237,13 @@ void* itk_hash_table_get(__this__, void* key)
  */
 void* itk_hash_table_put(__this__, void* key, void* value)
 {
-  long index = hash(this, key);
+  long key_hash = hash(this, key);
+  long index = truncate_hash(this, key_hash);
   itk_hash_entry* bucket = *(this->buckets + index);
   void* rc;
   
   while (bucket)
-    if ((bucket->key == key) || (this->key_comparator && this->key_comparator(bucket->key, key)))
+    if (TEST_KEY(this, bucket, key, key_hash))
       {
 	rc = bucket->value;
 	bucket->value = value;
@@ -232,10 +255,13 @@ void* itk_hash_table_put(__this__, void* key, void* value)
   if (++(this->size) > this->threshold)
     {
       rehash(this);
-      index = hash(this, key);
+      index = truncate_hash(this, key_hash);
     }
   
   bucket = malloc(sizeof(itk_hash_entry));
+  bucket->value = value;
+  bucket->key = key;
+  bucket->hash = key_hash;
   bucket->next = *(this->buckets + index);
   *(this->buckets + index) = bucket;
   
@@ -251,14 +277,15 @@ void* itk_hash_table_put(__this__, void* key, void* value)
  */
 void* itk_hash_table_remove(__this__, void* key)
 {
-  long index = hash(this, key);
+  long key_hash = hash(this, key);
+  long index = truncate_hash(this, key_hash);
   itk_hash_entry* bucket = *(this->buckets + index);
   itk_hash_entry* last = NULL;
   void* rc;
   
   while (bucket)
     {
-      if ((bucket->key == key) || (this->key_comparator && this->key_comparator(bucket->key, key)))
+      if (TEST_KEY(this, bucket, key, key_hash))
 	{
 	  if (last == NULL)
 	    *(this->buckets + index) = bucket->next;

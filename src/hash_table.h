@@ -38,6 +38,11 @@ typedef struct _itk_hash_entry
   void* value;
   
   /**
+   * The truncated hash value of the key
+   */
+  long hash;
+  
+  /**
    * The next entry in the bucket
    */
   struct _itk_hash_entry* next;
