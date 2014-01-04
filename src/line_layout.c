@@ -60,11 +60,11 @@ static void prepare_h(__this__)
 	}
       while (width > 0)
 	{
-	  itk_component* child;
-	  itk_component* end = children + n;
+	  itk_component** child;
+	  itk_component** end = children + n;
 	  long can_grow = 0;
 	  for (child = children; child != end; child++)
-	    if ((buf + i)->width < child->preferred_size.width)
+	    if ((buf + i)->width < (*child)->preferred_size.width)
 	      can_grow++;
 	  if (can_grow)
 	    {
@@ -72,7 +72,7 @@ static void prepare_h(__this__)
 	      if (increment == 0)
 		increment = 1;
 	      for (child = children; (child != end) && width; child++)
-		if ((now = (buf + i)->width) < (max = child->preferred_size.width))
+		if ((now = (buf + i)->width) < (max = (*child)->preferred_size.width))
 		  {
 		    dimension_t soon = now + increment;
 		    (buf + i)->width = soon < max ? soon : max;
@@ -117,11 +117,11 @@ static void prepare_v(__this__)
 	}
       while (height > 0)
 	{
-	  itk_component* child;
-	  itk_component* end = children + n;
+	  itk_component** child;
+	  itk_component** end = children + n;
 	  long can_grow = 0;
 	  for (child = children; child != end; child++)
-	    if ((buf + i)->height < child->preferred_size.height)
+	    if ((buf + i)->height < (*child)->preferred_size.height)
 	      can_grow++;
 	  if (can_grow)
 	    {
@@ -129,7 +129,7 @@ static void prepare_v(__this__)
 	      if (increment == 0)
 		increment = 1;
 	      for (child = children; (child != end) && height; child++)
-		if ((now = (buf + i)->height) < (max = child->preferred_size.height))
+		if ((now = (buf + i)->height) < (max = (*child)->preferred_size.height))
 		  {
 		    dimension_t soon = now + increment;
 		    (buf + i)->height = soon < max ? soon : max;
