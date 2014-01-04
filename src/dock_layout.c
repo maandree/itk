@@ -60,7 +60,7 @@ rectangle_t* nonzero(position_t x, position_t y, dimension_t width, dimension_t 
  */
 static void prepare_(__this__, char mode)
 {
-  itk_hash_table* prepared = PREPARED(this);
+  itk_hash_table* prepared = PREPARED(this) = itk_new_hash_table();
   itk_component* container = CONTAINER(this);
   
   position_t x = 0, y = 0;
@@ -181,8 +181,6 @@ static void prepare_(__this__, char mode)
       itk_hash_table_put(prepared, child, nonzero(x, y, w, h)); /* contraint == "center" */
       w = h = 0;
     }
-  
-  PREPARED(this) = itk_new_hash_table();
 }
 
 

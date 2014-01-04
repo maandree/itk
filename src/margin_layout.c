@@ -24,8 +24,8 @@
 
 #define __this__  itk_layout_manager* this
 
-#define CONTAINER_(layout)  *((void**)(layout->data + 0))
-#define MARGINS_(layout)    *((void**)(layout->data + 1))
+#define CONTAINER_(layout)  *((void**)(layout->data) + 0)
+#define MARGINS_(layout)    *((void**)(layout->data) + 1)
 
 #define CONTAINER(layout)   ((itk_component*)(CONTAINER_(layout)))
 #define MARGINS(layout)     ((dimension_t*)(MARGINS_(layout)))
