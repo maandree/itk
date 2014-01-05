@@ -38,58 +38,79 @@
 
 /**
  * Prepare the layout manager for locating of multiple components, probably all of them
+ * 
+ * @param  MAJOR     The major size (width if layouted out horizontally)
+ * @param  MINOR     The minor size (height if layouted out horizontally)
+ * @param  AXIS      The major axis (x if layouted out horizontally)
+ * @param  REVERSED  true iff layout out from right to top or bottom up
+ */
+#define prepare_(this, MAJOR, MINOR, AXIS, REVERSED)			\
+  ({									\
+    itk_hash_table* prepared = PREPARED_(this) = itk_new_hash_table();	\
+    itk_component* container = CONTAINER(this);				\
+    long i, n;								\
+    if ((n = container->children_count))				\
+      {									\
+	itk_component** children = container->children;			\
+	rectangle_t* buf = BUF_(this) = malloc(n * sizeof(rectangle_t)); \
+	dimension_t gap = GAP(this);					\
+	dimension_t MINOR = container->size.MINOR;			\
+	dimension_t MAJOR = container->size.MAJOR - gap * (n - 1);	\
+	position_t AXIS = 0;						\
+	for (i = 0; i < n; i++)						\
+	  {								\
+	    if (((buf + i)->MAJOR = (*(children + i))->minimum_size.MAJOR) < 0)	\
+	      (buf + i)->MAJOR = 0;					\
+	    MAJOR -= (buf + i)->MAJOR;					\
+	  }								\
+	while (MAJOR > 0)						\
+	  {								\
+	    itk_component** child;					\
+	    itk_component** end = children + n;				\
+	    long can_grow = 0;						\
+	    for (child = children; child != end; child++)		\
+	      if ((buf + i)->MAJOR < (*child)->preferred_size.MAJOR)	\
+		can_grow++;						\
+	    if (can_grow)						\
+	      {								\
+		dimension_t increment = MAJOR / can_grow, max, now;	\
+		if (increment == 0)					\
+		  increment = 1;					\
+		for (child = children; (child != end) && MAJOR; child++) \
+		  if ((now = (buf + i)->MAJOR) < (max = (*child)->preferred_size.MAJOR)) \
+		    {							\
+		      dimension_t soon = now + increment;		\
+		      (buf + i)->MAJOR = soon < max ? soon : max;	\
+		      MAJOR -= (buf + i)->MAJOR - now;			\
+		    }							\
+	      }								\
+	  }								\
+	for (i = 0; i < n; i++)						\
+	  {								\
+	    itk_hash_table_put(prepared, *(children + i), buf + i);	\
+	    (buf + i)->defined = true;					\
+	    (buf + i)->MINOR = MINOR;					\
+	    (buf + i)->y = (buf + i)->x = 0;				\
+	    (buf + i)->AXIS = AXIS;					\
+	    AXIS += gap + (buf + i)->MAJOR;				\
+	  }								\
+	if (REVERSED)							\
+	  {								\
+	    rectangle_t* buf = BUF(this);				\
+	    dimension_t MAJOR = container->size.MAJOR;			\
+	    for (i = 0; i < n; i++)					\
+	      (buf + i)->AXIS = MAJOR - (buf + i)->AXIS - (buf + i)->MAJOR; \
+	  }								\
+      }									\
+  })
+
+
+/**
+ * Prepare the layout manager for locating of multiple components, probably all of them
  */
 static void prepare_h(__this__)
 {
-  itk_hash_table* prepared = PREPARED_(this) = itk_new_hash_table();
-  itk_component* container = CONTAINER(this);
-  long i, n;
-  if ((n = container->children_count))
-    {
-      itk_component** children = container->children;
-      rectangle_t* buf = BUF_(this) = malloc(n * sizeof(rectangle_t));
-      dimension_t gap = GAP(this);
-      dimension_t height = container->size.height;
-      dimension_t width = container->size.width - gap * (n - 1);
-      position_t x = 0;
-      for (i = 0; i < n; i++)
-	{
-	  if (((buf + i)->width = (*(children + i))->minimum_size.width) < 0)
-	    (buf + i)->width = 0;
-	  width -= (buf + i)->width;
-	}
-      while (width > 0)
-	{
-	  itk_component** child;
-	  itk_component** end = children + n;
-	  long can_grow = 0;
-	  for (child = children; child != end; child++)
-	    if ((buf + i)->width < (*child)->preferred_size.width)
-	      can_grow++;
-	  if (can_grow)
-	    {
-	      dimension_t increment = width / can_grow, max, now;
-	      if (increment == 0)
-		increment = 1;
-	      for (child = children; (child != end) && width; child++)
-		if ((now = (buf + i)->width) < (max = (*child)->preferred_size.width))
-		  {
-		    dimension_t soon = now + increment;
-		    (buf + i)->width = soon < max ? soon : max;
-		    width -= (buf + i)->width - now;
-		  }
-	    }
-	}
-      for (i = 0; i < n; i++)
-	{
-	  itk_hash_table_put(prepared, *(children + i), buf + i);
-	  (buf + i)->defined = true;
-	  (buf + i)->height = height;
-	  (buf + i)->y = 0;
-	  (buf + i)->x = x;
-	  x += gap + (buf + i)->width;
-	}
-    }
+  prepare_(this, width, height, x, false);
 }
 
 
@@ -98,55 +119,7 @@ static void prepare_h(__this__)
  */
 static void prepare_v(__this__)
 {
-  itk_hash_table* prepared = PREPARED_(this) = itk_new_hash_table();
-  itk_component* container = CONTAINER(this);
-  long i, n;
-  if ((n = container->children_count))
-    {
-      itk_component** children = container->children;
-      rectangle_t* buf = BUF_(this) = malloc(n * sizeof(rectangle_t));
-      dimension_t gap = GAP(this);
-      dimension_t height = container->size.height - gap * (n - 1);
-      dimension_t width = container->size.width;
-      position_t y = 0;
-      for (i = 0; i < n; i++)
-	{
-	  if (((buf + i)->height = (*(children + i))->minimum_size.height) < 0)
-	    (buf + i)->height = 0;
-	  height -= (buf + i)->height;
-	}
-      while (height > 0)
-	{
-	  itk_component** child;
-	  itk_component** end = children + n;
-	  long can_grow = 0;
-	  for (child = children; child != end; child++)
-	    if ((buf + i)->height < (*child)->preferred_size.height)
-	      can_grow++;
-	  if (can_grow)
-	    {
-	      dimension_t increment = height / can_grow, max, now;
-	      if (increment == 0)
-		increment = 1;
-	      for (child = children; (child != end) && height; child++)
-		if ((now = (buf + i)->height) < (max = (*child)->preferred_size.height))
-		  {
-		    dimension_t soon = now + increment;
-		    (buf + i)->height = soon < max ? soon : max;
-		    height -= (buf + i)->height - now;
-		  }
-	    }
-	}
-      for (i = 0; i < n; i++)
-	{
-	  itk_hash_table_put(prepared, *(children + i), buf + i);
-	  (buf + i)->defined = true;
-	  (buf + i)->width = width;
-	  (buf + i)->y = y;
-	  (buf + i)->x = 0;
-	  y += gap + (buf + i)->height;
-	}
-    }
+  prepare_(this, height, width, y, false);
 }
 
 
@@ -155,15 +128,7 @@ static void prepare_v(__this__)
  */
 static void prepare_hr(__this__)
 {
-  itk_component* container = CONTAINER(this);
-  long i, n;
-  if ((n = container->children_count))
-    {
-      rectangle_t* buf = BUF(this);
-      dimension_t width = container->size.width;
-      for (i = 0; i < n; i++)
-	(buf + i)->x = width - (buf + i)->x - (buf + i)->width;
-    }
+  prepare_(this, width, height, x, true);
 }
 
 
@@ -172,15 +137,7 @@ static void prepare_hr(__this__)
  */
 static void prepare_vr(__this__)
 {
-  itk_component* container = CONTAINER(this);
-  long i, n;
-  if ((n = container->children_count))
-    {
-      rectangle_t* buf = BUF(this);
-      dimension_t height = container->size.height;
-      for (i = 0; i < n; i++)
-	(buf + i)->y = height - (buf + i)->y - (buf + i)->height;
-    }
+  prepare_(this, height, width, y, true);
 }
 
 
@@ -233,26 +190,121 @@ static rectangle_t locate(__this__, itk_component* child)
 /**
  * Calculate the combined advisory minimum size of all components
  * 
+ * @param   MAJOR  The major size (width if layouted out horizontally)
+ * @param   MINOR  The minor size (height if layouted out horizontally)
+ * @return         Advisory minimum size for the container
+ */
+#define minimum_size_(this, MAJOR, MINOR)			\
+  ({								\
+    itk_component** children = CONTAINER(this)->children;	\
+    long i, n = CONTAINER(this)->children_count;		\
+    size2_t rc, t;						\
+    rc.width = rc.height = 0;					\
+    rc.defined = true;						\
+    for (i = 0; i < n; i++)					\
+      {								\
+	t = (*(children + i))->minimum_size;			\
+	if (t.MAJOR > 0)					\
+	  rc.MAJOR += t.MAJOR;					\
+	if ((rc.MINOR < t.MINOR) && (t.MINOR > 0))		\
+	  rc.MINOR = t.MINOR;					\
+      }								\
+    if (n)							\
+      rc.MAJOR += GAP(this) * (n - 1);				\
+    rc /* return */;						\
+  })
+
+
+/**
+ * Calculate the combined advisory maximum size of all components
+ * 
+ * @param   MAJOR  The major size (width if layouted out horizontally)
+ * @param   MINOR  The minor size (height if layouted out horizontally)
+ * @return         Advisory maximum size for the container
+ */
+#define maximum_size_(this, MAJOR, MINOR)				\
+  ({									\
+    bool_t unbounded = false;						\
+    itk_component** children = CONTAINER(this)->children;		\
+    long i, n = CONTAINER(this)->children_count;			\
+    size2_t rc, t;							\
+    rc.MAJOR = 0;							\
+    rc.MINOR = UNBOUNDED;						\
+    rc.defined = true;							\
+    for (i = 0; i < n; i++)						\
+      {									\
+	t = (*(children + i))->maximum_size;				\
+	if (t.MAJOR < 0)						\
+	  unbounded = true;						\
+	else								\
+	  rc.MAJOR += t.MAJOR;						\
+	if (((rc.MINOR < 0) || (rc.MINOR > t.MINOR)) && (t.MINOR >= 0))	\
+	  rc.MINOR = t.MINOR;						\
+      }									\
+    if (n)								\
+      rc.MAJOR += GAP(this) * (n - 1);					\
+    else								\
+      if (unbounded)							\
+	rc.MAJOR = UNBOUNDED;						\
+    rc; /* return */							\
+  })
+
+
+/**
+ * Calculate the combined preferred size of all components
+ * 
+ * @return  Preferred size for the container
+ */
+#define preferred_size_(this, MAJOR, MINOR)			\
+  ({								\
+    size2_t min = this->minimum_size(this);			\
+    size2_t max = this->minimum_size(this);			\
+    itk_component** children = CONTAINER(this)->children;	\
+    long i, n = CONTAINER(this)->children_count;		\
+    size2_t rc, t;						\
+    rc.defined = true;						\
+    rc.MINOR = min.MINOR;					\
+    rc.MAJOR = 0;						\
+								\
+    for (i = 0; i < n; i++)					\
+      {								\
+	t = (*(children + i))->preferred_size;			\
+	if (rc.MINOR < t.MINOR)					\
+	  rc.MINOR = t.MINOR;					\
+	rc.MAJOR += t.MAJOR;					\
+      }								\
+    if (n)							\
+      rc.MAJOR += GAP(this) * (n - 1);				\
+								\
+    if ((rc.MINOR > max.MINOR) && (max.MINOR >= 0))		\
+      rc.MINOR = max.MINOR;					\
+    if (rc.MAJOR < min.MAJOR)					\
+      rc.MAJOR = min.MAJOR;					\
+    if ((rc.MAJOR > max.MAJOR) && (max.MAJOR >= 0))		\
+      rc.MAJOR = max.MAJOR;					\
+    rc; /* return */						\
+  })
+
+
+/**
+ * Calculate the combined advisory minimum size of all components
+ * 
  * @return  Advisory minimum size for the container
  */
 static size2_t minimum_size_h(__this__)
-{ 
-  itk_component** children = CONTAINER(this)->children;
-  long i, n = CONTAINER(this)->children_count;
-  size2_t rc, t;
-  rc.width = rc.height = 0;
-  rc.defined = true;
-  for (i = 0; i < n; i++)
-    {
-      t = (*(children + i))->minimum_size;
-      if (t.width > 0)
-	rc.width += t.width;
-      if ((rc.height < t.height) && (t.height > 0))
-	rc.height = t.height;
-    }
-  if (n)
-    rc.width += GAP(this) * (n - 1);
-  return rc;
+{
+  return minimum_size_(this, width, height);
+}
+
+
+/**
+ * Calculate the combined advisory minimum size of all components
+ * 
+ * @return  Advisory minimum size for the container
+ */
+static size2_t minimum_size_v(__this__)
+{
+  return minimum_size_(this, height, width);
 }
 
 
@@ -263,91 +315,7 @@ static size2_t minimum_size_h(__this__)
  */
 static size2_t maximum_size_h(__this__)
 {
-  bool_t unbounded = false;
-  itk_component** children = CONTAINER(this)->children;
-  long i, n = CONTAINER(this)->children_count;
-  size2_t rc, t;
-  rc.width = 0;
-  rc.height = UNBOUNDED;
-  rc.defined = true;
-  for (i = 0; i < n; i++)
-    {
-      t = (*(children + i))->maximum_size;
-      if (t.width < 0)
-	unbounded = true;
-      else
-	rc.width += t.width;
-      if (((rc.height < 0) || (rc.height > t.height)) && (t.height >= 0))
-	rc.height = t.height;
-    }
-  if (n)
-    rc.width += GAP(this) * (n - 1);
-  else
-    if (unbounded)
-      rc.width = UNBOUNDED;
-  return rc;
-}
-
-
-/**
- * Calculate the combined preferred size of all components
- * 
- * @return  Rreferred size for the container
- */
-static size2_t preferred_size_h(__this__)
-{
-  size2_t min = this->minimum_size(this);
-  size2_t max = this->minimum_size(this);
-  itk_component** children = CONTAINER(this)->children;
-  long i, n = CONTAINER(this)->children_count;
-  size2_t rc, t;
-  rc.defined = true;
-  rc.height = min.height;
-  rc.width = 0;
-  
-  for (i = 0; i < n; i++)
-    {
-      t = (*(children + i))->preferred_size;
-      if (rc.height < t.height)
-	rc.height = t.height;
-      rc.width += t.width;
-    }
-  if (n)
-    rc.width += GAP(this) * (n - 1);
-  
-  if ((rc.height > max.height) && (max.height >= 0))
-    rc.height = max.height;
-  if (rc.width < min.width)
-    rc.width = min.width;
-  if ((rc.width > max.width) && (max.width >= 0))
-    rc.width = max.width;
-  return rc;
-}
-
-
-/**
- * Calculate the combined advisory minimum size of all components
- * 
- * @return  Advisory minimum size for the container
- */
-static size2_t minimum_size_v(__this__)
-{ 
-  itk_component** children = CONTAINER(this)->children;
-  long i, n = CONTAINER(this)->children_count;
-  size2_t rc, t;
-  rc.width = rc.height = 0;
-  rc.defined = true;
-  for (i = 0; i < n; i++)
-    {
-      t = (*(children + i))->minimum_size;
-      if (t.height > 0)
-	rc.height += t.height;
-      if ((rc.width < t.width) && (t.width > 0))
-	rc.width = t.width;
-    }
-  if (n)
-    rc.height += GAP(this) * (n - 1);
-  return rc;
+  return maximum_size_(this, width, height);
 }
 
 
@@ -358,65 +326,29 @@ static size2_t minimum_size_v(__this__)
  */
 static size2_t maximum_size_v(__this__)
 {
-  bool_t unbounded = false;
-  itk_component** children = CONTAINER(this)->children;
-  long i, n = CONTAINER(this)->children_count;
-  size2_t rc, t;
-  rc.width = UNBOUNDED;
-  rc.height = 0;
-  rc.defined = true;
-  for (i = 0; i < n; i++)
-    {
-      t = (*(children + i))->maximum_size;
-      if (t.height < 0)
-	unbounded = true;
-      else
-	rc.height += t.height;
-      if (((rc.width < 0) || (rc.width > t.width)) && (t.width >= 0))
-	rc.width = t.width;
-    }
-  if (n)
-    rc.height += GAP(this) * (n - 1);
-  else
-    if (unbounded)
-      rc.height = UNBOUNDED;
-  return rc;
+  return maximum_size_(this, height, width);
 }
 
 
 /**
  * Calculate the combined preferred size of all components
  * 
- * @return  Rreferred size for the container
+ * @return  Preferred size for the container
+ */
+static size2_t preferred_size_h(__this__)
+{
+  return preferred_size_(this, width, height);
+}
+
+
+/**
+ * Calculate the combined preferred size of all components
+ * 
+ * @return  Preferred size for the container
  */
 static size2_t preferred_size_v(__this__)
 {
-  size2_t min = this->minimum_size(this);
-  size2_t max = this->minimum_size(this);
-  itk_component** children = CONTAINER(this)->children;
-  long i, n = CONTAINER(this)->children_count;
-  size2_t rc, t;
-  rc.defined = true;
-  rc.height = 0;
-  rc.width = min.width;
-  
-  for (i = 0; i < n; i++)
-    {
-      t = (*(children + i))->preferred_size;
-      if (rc.width < t.width)
-	rc.width = t.width;
-      rc.height += t.height;
-    }
-  if (n)
-    rc.height += GAP(this) * (n - 1);
-  
-  if ((rc.width > max.width) && (max.width >= 0))
-    rc.width = max.width;
-  if (rc.height < min.height)
-    rc.height = min.height;
-  if ((rc.height > max.height) && (max.height >= 0))
-    rc.height = max.height;
-  return rc;
+  return preferred_size_(this, height, width);
 }
 
 
