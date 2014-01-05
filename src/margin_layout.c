@@ -137,7 +137,7 @@ static size2_t maximum_size(__this__)
 /**
  * Calculate the combined preferred size of all components
  * 
- * @return  Rreferred size for the container
+ * @return  Preferred size for the container
  */
 static size2_t preferred_size(__this__)
 {

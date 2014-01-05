@@ -65,7 +65,7 @@ typedef struct _itk_layout_manager
   /**
    * Calculate the combined preferred size of all components
    * 
-   * @return  Rreferred size for the container
+   * @return  Preferred size for the container
    */
   size2_t (*preferred_size)(__this__);
   
