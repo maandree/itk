@@ -197,19 +197,22 @@ static rectangle_t locate(__this__, itk_component* child)
 #define minimum_size_(this, MAJOR, MINOR)			\
   ({								\
     itk_component** children = CONTAINER(this)->children;	\
-    long i, n = CONTAINER(this)->children_count;		\
+    long i, n = CONTAINER(this)->children_count, n_ = 0;	\
     size2_t rc, t;						\
     rc.width = rc.height = 0;					\
     rc.defined = true;						\
     for (i = 0; i < n; i++)					\
-      {								\
-	t = (*(children + i))->minimum_size;			\
-	if (t.MAJOR > 0)					\
-	  rc.MAJOR += t.MAJOR;					\
-	if ((rc.MINOR < t.MINOR) && (t.MINOR > 0))		\
-	  rc.MINOR = t.MINOR;					\
-      }								\
-    if (n)							\
+      if ((*(children + i))->visible)				\
+	{							\
+	  t = (*(children + i))->minimum_size;			\
+	  if (t.MAJOR > 0)					\
+	    rc.MAJOR += t.MAJOR;				\
+	  if ((rc.MINOR < t.MINOR) && (t.MINOR > 0))		\
+	    rc.MINOR = t.MINOR;					\
+	}							\
+      else							\
+	n_++;							\
+    if ((n -= n_))						\
       rc.MAJOR += GAP(this) * (n - 1);				\
     rc /* return */;						\
   })
@@ -226,22 +229,25 @@ static rectangle_t locate(__this__, itk_component* child)
   ({									\
     bool_t unbounded = false;						\
     itk_component** children = CONTAINER(this)->children;		\
-    long i, n = CONTAINER(this)->children_count;			\
+    long i, n = CONTAINER(this)->children_count, n_ = 0;		\
     size2_t rc, t;							\
     rc.MAJOR = 0;							\
     rc.MINOR = UNBOUNDED;						\
     rc.defined = true;							\
     for (i = 0; i < n; i++)						\
-      {									\
-	t = (*(children + i))->maximum_size;				\
-	if (t.MAJOR < 0)						\
-	  unbounded = true;						\
-	else								\
-	  rc.MAJOR += t.MAJOR;						\
-	if (((rc.MINOR < 0) || (rc.MINOR > t.MINOR)) && (t.MINOR >= 0))	\
-	  rc.MINOR = t.MINOR;						\
-      }									\
-    if (n)								\
+      if ((*(children + i))->visible)					\
+	{								\
+	  t = (*(children + i))->maximum_size;				\
+	  if (t.MAJOR < 0)						\
+	    unbounded = true;						\
+	  else								\
+	    rc.MAJOR += t.MAJOR;					\
+	  if (((rc.MINOR < 0) || (rc.MINOR > t.MINOR)) && (t.MINOR >= 0)) \
+	    rc.MINOR = t.MINOR;						\
+	}								\
+      else								\
+	n_++;								\
+    if ((n -= n_))							\
       rc.MAJOR += GAP(this) * (n - 1);					\
     else								\
       if (unbounded)							\
@@ -260,20 +266,23 @@ static rectangle_t locate(__this__, itk_component* child)
     size2_t min = this->minimum_size(this);			\
     size2_t max = this->minimum_size(this);			\
     itk_component** children = CONTAINER(this)->children;	\
-    long i, n = CONTAINER(this)->children_count;		\
+    long i, n = CONTAINER(this)->children_count, n_ = 0;	\
     size2_t rc, t;						\
     rc.defined = true;						\
     rc.MINOR = min.MINOR;					\
     rc.MAJOR = 0;						\
 								\
     for (i = 0; i < n; i++)					\
-      {								\
-	t = (*(children + i))->preferred_size;			\
-	if (rc.MINOR < t.MINOR)					\
-	  rc.MINOR = t.MINOR;					\
-	rc.MAJOR += t.MAJOR;					\
-      }								\
-    if (n)							\
+      if ((*(children + i))->visible)				\
+	{							\
+	  t = (*(children + i))->preferred_size;		\
+	  if (rc.MINOR < t.MINOR)				\
+	    rc.MINOR = t.MINOR;					\
+	  rc.MAJOR += t.MAJOR;					\
+	}							\
+      else							\
+	n_++;							\
+    if ((n -= n_))						\
       rc.MAJOR += GAP(this) * (n - 1);				\
 								\
     if ((rc.MINOR > max.MINOR) && (max.MINOR >= 0))		\
