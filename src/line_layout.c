@@ -58,41 +58,46 @@
 	dimension_t MAJOR = container->size.MAJOR - gap * (n - 1);	\
 	position_t AXIS = 0;						\
 	for (i = 0; i < n; i++)						\
-	  {								\
-	    if (((buf + i)->MAJOR = (*(children + i))->minimum_size.MAJOR) < 0)	\
-	      (buf + i)->MAJOR = 0;					\
-	    MAJOR -= (buf + i)->MAJOR;					\
-	  }								\
+	  if ((*(children + i))->visible)				\
+	    {								\
+	      if (((buf + i)->MAJOR = (*(children + i))->minimum_size.MAJOR) < 0) \
+		(buf + i)->MAJOR = 0;					\
+	      MAJOR -= (buf + i)->MAJOR;				\
+	    }								\
 	while (MAJOR > 0)						\
 	  {								\
 	    itk_component** child;					\
 	    itk_component** end = children + n;				\
 	    long can_grow = 0;						\
 	    for (child = children; child != end; child++)		\
-	      if ((buf + i)->MAJOR < (*child)->preferred_size.MAJOR)	\
-		can_grow++;						\
+	      if ((*(children + i))->visible)				\
+		if ((buf + i)->MAJOR < (*child)->preferred_size.MAJOR)	\
+		  can_grow++;						\
 	    if (can_grow)						\
 	      {								\
 		dimension_t increment = MAJOR / can_grow, max, now;	\
 		if (increment == 0)					\
 		  increment = 1;					\
 		for (child = children; (child != end) && MAJOR; child++) \
-		  if ((now = (buf + i)->MAJOR) < (max = (*child)->preferred_size.MAJOR)) \
-		    {							\
-		      dimension_t soon = now + increment;		\
-		      (buf + i)->MAJOR = soon < max ? soon : max;	\
-		      MAJOR -= (buf + i)->MAJOR - now;			\
-		    }							\
+		  if ((*(children + i))->visible)			\
+		    if ((now = (buf + i)->MAJOR) < (max = (*child)->preferred_size.MAJOR)) \
+		      {							\
+			dimension_t soon = now + increment;		\
+			(buf + i)->MAJOR = soon < max ? soon : max;	\
+			MAJOR -= (buf + i)->MAJOR - now;		\
+		      }							\
 	      }								\
 	  }								\
 	for (i = 0; i < n; i++)						\
 	  {								\
 	    itk_hash_table_put(prepared, *(children + i), buf + i);	\
-	    (buf + i)->defined = true;					\
-	    (buf + i)->MINOR = MINOR;					\
-	    (buf + i)->y = (buf + i)->x = 0;				\
-	    (buf + i)->AXIS = AXIS;					\
-	    AXIS += gap + (buf + i)->MAJOR;				\
+	    if (((buf + i)->defined = (*(children + i))->visible))	\
+	      {								\
+		(buf + i)->MINOR = MINOR;				\
+		(buf + i)->y = (buf + i)->x = 0;			\
+		(buf + i)->AXIS = AXIS;					\
+		AXIS += gap + (buf + i)->MAJOR;				\
+	      }								\
 	  }								\
 	if (REVERSED)							\
 	  {								\
