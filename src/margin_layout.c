@@ -105,6 +105,8 @@ static size2_t minimum_size(__this__)
 	if (rc.height < (*(children + i))->minimum_size.height)
 	  rc.height = (*(children + i))->minimum_size.height;
       }
+  rc.width += LEFT(this) + RIGHT(this);
+  rc.height += TOP(this) + BOTTOM(this);
   return rc;
 }
 
@@ -130,6 +132,10 @@ static size2_t maximum_size(__this__)
 	if (((rc.height < 0) || (rc.height > t.height)) && (t.height >= 0))
 	  rc.height = t.height;
       }
+  if (rc.width >= 0)
+    rc.width += LEFT(this) + RIGHT(this);
+  if (rc.height >= 0)
+    rc.height += TOP(this) + BOTTOM(this);
   return rc;
 }
 
@@ -154,6 +160,8 @@ static size2_t preferred_size(__this__)
 	if (rc.height < (*(children + i))->preferred_size.height)
 	  rc.height = (*(children + i))->preferred_size.height;
       }
+  rc.width += LEFT(this) + RIGHT(this);
+  rc.height += TOP(this) + BOTTOM(this);
   return rc;
 }
 
