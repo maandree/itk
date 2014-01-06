@@ -42,6 +42,79 @@
  */
 static void prepare(__this__)
 {
+  itk_hash_table* prepared = PREPARED_(this) = itk_new_hash_table();
+  itk_component* container = CONTAINER(this);
+  itk_component** children = container->children;
+  long n = container->children_count, line_n = 0;
+  itk_component** line_c = alloca(n * sizeof(itk_component*));
+  rectangle_t** line_r = alloca(n * sizeof(rectangle_t*));
+  int8_t align = ALIGN(this);
+  size2_t bounds = container->size;
+  dimension_t width = 0, height = 0;
+  position_t y = 0;
+  dimension_t hgap = HGAP(this), vgap = VGAP(this);
+  itk_component* child;
+  rectangle_t* r;
+  long i, j;
+  
+  bounds.width += hgap;
+  
+  for (i = 0; i < n; i++)
+    {
+    add_components:
+      child = *(children + i);
+      r = malloc(sizeof(rectangle_t));
+      if ((r->defined = child->visible) == false)
+	{
+	  itk_hash_table_put(prepared, child, r);
+	  continue;
+	}
+      if (width + child->preferred_size.width + hgap <= bounds.width)
+	{
+	  r->y = y;
+	  r->x = (position_t)width;
+	  r->height = child->preferred_size.height;
+	  r->width = child->preferred_size.width;
+	  width += child->preferred_size.width + hgap;
+	  itk_hash_table_put(prepared, *(line_c + line_n) = child, *(line_r + line_n) = r);
+	  line_n++;
+	}
+      else
+	goto align_components;
+    }
+  
+ align_components:
+  if (width < bounds.width)
+    {
+      if (align == ALIGNMENT_RIGHT)
+	{
+	  dimension_t offset = bounds.width - width;
+	  for (j = 0; j < line_n; j++)
+	    (*(line_r + j))->x += offset;
+	}
+      else if (align == ALIGNMENT_JUSTIFY)
+	for (j = 0; j < line_n; j++)
+	  {
+	    ;
+	  }
+    }
+  
+  for (j = 0; j < line_n; j++)
+    if (height < (*(line_r + j))->height)
+      height = (*(line_r + j))->height;
+  for (j = 0; j < line_n; j++)
+    if (height > (*(line_c + j))->maximum_size.height)
+      (*(line_r + j))->height = (*(line_c + j))->maximum_size.height;
+    else
+      (*(line_r + j))->height = height;
+  
+  if (i < n)
+    {
+      y += height + vcap;
+      width = height = 0;
+      line_n = 0;
+      goto add_components;
+    }
 }
 
 
@@ -52,7 +125,7 @@ static void done(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table, false, false);
+    itk_free_hash_table(hash_table, true, false);
   PREPARED_(this) = NULL;
 }
 
@@ -170,7 +243,7 @@ static void free_line_layout(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table, false, false);
+    itk_free_hash_table(hash_table, true, false);
   free(GAP_(this));
   free(ALIGN_(this));
   free(this->data);

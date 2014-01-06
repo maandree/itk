@@ -87,21 +87,24 @@
 	      }								\
 	  }								\
 	for (i = 0; i < n; i++)						\
-	  {								\
-	    itk_hash_table_put(prepared, *(children + i), buf + i);	\
-	    if (((buf + i)->defined = (*(children + i))->visible))	\
-	      {								\
-		(buf + i)->MINOR = MINOR;				\
-		(buf + i)->y = (buf + i)->x = 0;			\
-		(buf + i)->AXIS = AXIS;					\
-		AXIS += gap + (buf + i)->MAJOR;				\
-	      }								\
-	  }								\
+	  if (((buf + i)->defined = (*(children + i))->visible))	\
+	    {								\
+	      (buf + i)->MINOR = MINOR;					\
+	      (buf + i)->y = (buf + i)->x = 0;				\
+	      (buf + i)->AXIS = AXIS;					\
+	      AXIS += gap + (buf + i)->MAJOR;				\
+	    }								\
 	if (REVERSED)							\
 	  {								\
 	    dimension_t MAJOR = container->size.MAJOR;			\
 	    for (i = 0; i < n; i++)					\
 	      (buf + i)->AXIS = MAJOR - (buf + i)->AXIS - (buf + i)->MAJOR; \
+	  }								\
+	for (i = 0; i < n; i++)						\
+	  {								\
+	    rectangle_t* rect = malloc(sizeof(rectangle_t));		\
+	    *rect = *(buf + i);						\
+	    itk_hash_table_put(prepared, *(children + i), rect);	\
 	  }								\
       }									\
   })
@@ -150,7 +153,7 @@ static void done(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table, false, false);
+    itk_free_hash_table(hash_table, true, false);
   PREPARED_(this) = NULL;
 }
 
@@ -367,7 +370,7 @@ static void free_line_layout(__this__)
 {
   itk_hash_table* hash_table = PREPARED(this);
   if (hash_table)
-    itk_free_hash_table(hash_table, false, false);
+    itk_free_hash_table(hash_table, true, false);
   free(GAP_(this));
   free(this->data);
   free(this);
