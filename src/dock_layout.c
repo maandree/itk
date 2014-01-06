@@ -139,7 +139,7 @@ static void prepare_(__this__, char mode)
       itk_component* child = *(children + children_ptr);
       char* constraints = child->constraints;
       rectangle_t* r;
-      if (constraints)
+      if (child->visible && constraints)
 	{
 	  size2_t child_size =
 	    mode == 0 ? child->preferred_size :
@@ -178,8 +178,17 @@ static void prepare_(__this__, char mode)
 	      }
 	  }
 	}
-      itk_hash_table_put(prepared, child, nonzero(x, y, w, h)); /* contraint == "center" */
-      w = h = 0;
+      else if (child->visible)
+	{
+	  itk_hash_table_put(prepared, child, nonzero(x, y, w, h)); /* contraint == "center" */
+	  w = h = 0;
+	}
+      else
+	{
+	  r = malloc(sizeof(position_t));
+	  r->defined = false;
+	  itk_hash_table_put(prepared, child, r);
+	}
     }
 }
 
@@ -261,38 +270,39 @@ static rectangle_t locate(__this__, itk_component* child)
 	  rectangle_t* r;					\
 								\
 	  if ((r = itk_hash_table_get(PREPARED(this), child)))	\
-	    {							\
-	      if (strstr(constraints, "left"))			\
-		{						\
-		  lw += child->SIZE.width;			\
-		  y = MAX(y, r->y + child->SIZE.height + bh);	\
-		}						\
-	      else if (strstr(constraints, "top"))		\
-		{						\
-		  th += child->SIZE.height;			\
-		  x = MAX(x, r->x + child->SIZE.width + rw);	\
-		}						\
-	      else if (strstr(constraints, "right"))		\
-		{						\
-		  rw += child->SIZE.width;			\
-		  y = MAX(y, r->y + child->SIZE.height + th);	\
-		}						\
-	      else if (strstr(constraints, "bottom"))		\
-		{						\
-		  bh += child->SIZE.height;			\
-		  x = MAX(x, r->x + child->SIZE.width + lw);	\
-		}						\
-	      else if (strstr(constraints, "cent"))		\
-		{						\
-		  cw = MAX(cw, child->SIZE.width);		\
-		  ch = MAX(ch, child->SIZE.height);		\
-		}						\
-	      else						\
-		{						\
-		  x = MAX(x, r->x + r->width);			\
-		  y = MAX(y, r->y + r->height);			\
-		}						\
-	    }							\
+	    if (r->defined)					\
+	      {							\
+		if (strstr(constraints, "left"))		\
+		  {						\
+		    lw += child->SIZE.width;			\
+		    y = MAX(y, r->y + child->SIZE.height + bh);	\
+		  }						\
+		else if (strstr(constraints, "top"))		\
+		  {						\
+		    th += child->SIZE.height;			\
+		    x = MAX(x, r->x + child->SIZE.width + rw);	\
+		  }						\
+		else if (strstr(constraints, "right"))		\
+		  {						\
+		    rw += child->SIZE.width;			\
+		    y = MAX(y, r->y + child->SIZE.height + th);	\
+		  }						\
+		else if (strstr(constraints, "bottom"))		\
+		  {						\
+		    bh += child->SIZE.height;			\
+		    x = MAX(x, r->x + child->SIZE.width + lw);	\
+		  }						\
+		else if (strstr(constraints, "cent"))		\
+		  {						\
+		    cw = MAX(cw, child->SIZE.width);		\
+		    ch = MAX(ch, child->SIZE.height);		\
+		  }						\
+		else						\
+		  {						\
+		    x = MAX(x, r->x + r->width);		\
+		    y = MAX(y, r->y + r->height);		\
+		  }						\
+	      }							\
 	}							\
     }								\
     this->done(this);						\
