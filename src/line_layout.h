@@ -49,7 +49,7 @@
  * Constructor
  * 
  * @param  container    The container which uses the layout manager
- * @param  orientation  Whether the components are lined up horizontally
+ * @param  orientation  In which direction are components added
  * @param  gap          The size of the gap between components
  */
 itk_layout_manager* itk_new_line_layout(itk_component* container, int8_t orientation, dimension_t gap);
