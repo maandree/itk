@@ -84,18 +84,58 @@ static void prepare(__this__)
     }
   
  align_components:
-  if (width < bounds.width)
+  if (line_n && (width < bounds.width))
     {
+      width = bounds.width - width;
       if (align == ALIGNMENT_RIGHT)
-	{
-	  dimension_t offset = bounds.width - width;
-	  for (j = 0; j < line_n; j++)
-	    (*(line_r + j))->x += offset;
-	}
-      else if (align == ALIGNMENT_JUSTIFY)
 	for (j = 0; j < line_n; j++)
+	  (*(line_r + j))->x += width;
+      else if (align == ALIGNMENT_JUSTIFY)
+	while (width)
 	  {
-	    ;
+	    long can_grow = 0;
+	    dimension_t max;
+	    for (j = 0; j < line_n; j++)
+	      {
+		max = (*(line_c + j))->maximum_size.width;
+		if ((max < 0) || ((*(line_r + j))->width < max))
+		  can_grow++;
+	      }
+	    if (can_grow)
+	      {
+		dimension_t increment = width / can_grow, now;
+		if (increment == 0)
+		  increment = 1;
+		for (j = 0; (j < line_n) && width; j++)
+		  {
+		    now = (*(line_r + j))->width;
+		    max = (*(line_c + j))->maximum_size.width;
+		    if ((max < 0) || (now < max))
+		      {
+			dimension_t soon = now + increment;
+			(*(line_r + j))->width = soon < max ? soon : max;
+			width -= (*(line_r + j))->width - now;
+		      }
+		  }
+	      }
+	    else if (line_n > 1)
+	      {
+		dimension_t increment = width / (line_n - 1);
+		dimension_t offset = 0;
+		if (increment == 0)
+		  increment = 1;
+		for (j = 1; j < line_n; j++)
+		  {
+		    if (width)
+		      {
+			offset += increment;
+			width -= increment;
+		      }
+		    (*(line_r + j))->x += offset;
+		  }
+	      }
+	    else
+	      (*line_r)->width += width;
 	  }
     }
   
@@ -110,7 +150,7 @@ static void prepare(__this__)
   
   if (i < n)
     {
-      y += height + vcap;
+      y += height + vgap;
       width = height = 0;
       line_n = 0;
       goto add_components;
