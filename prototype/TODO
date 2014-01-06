@@ -36,7 +36,6 @@ TableLayout
 FlowLayout
 GridLayout
 GridFlowLayout
-StackLayout (stacking on Z-axis)
 
 Text object instead of String that can have icons, formating and anything else
 Dropdown terminal
