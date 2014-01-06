@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "line_layout.h"
+#include "flow_layout.h"
 #include "hash_table.h"
 #include "itkmacros.h"
 
@@ -28,17 +28,19 @@
 #define CONTAINER_(layout)  *((void**)(layout->data) + 0)
 #define PREPARED_(layout)   *((void**)(layout->data) + 1)
 #define GAP_(layout)        *((void**)(layout->data) + 2)
+#define ALIGN_(layout)      *((void**)(layout->data) + 3)
 
 #define CONTAINER(layout)   ((itk_component*)(CONTAINER_(layout)))
 #define PREPARED(layout)    ((itk_hash_table*)(PREPARED_(layout)))
 #define HGAP(layout)        *((dimension_t*)(GAP_(layout) + 0))
 #define VGAP(layout)        *((dimension_t*)(GAP_(layout) + 1))
+#define ALIGN(layout)       *((int8_t*)(ALIGN_(layout)))
 
 
 /**
  * Prepare the layout manager for locating of multiple components, probably all of them
  */
-static void prepare_h(__this__)
+static void prepare(__this__)
 {
 }
 
@@ -170,6 +172,7 @@ static void free_line_layout(__this__)
   if (hash_table)
     itk_free_hash_table(hash_table, false, false);
   free(GAP_(this));
+  free(ALIGN_(this));
   free(this->data);
   free(this);
 }
@@ -183,12 +186,12 @@ static void free_line_layout(__this__)
  * @param  hgap       The size of the horizontal gap between components
  * @param  vgap       The size of the vertical gap between components
  */
-itk_layout_manager* itk_new_flow_layout(itk_component* container, int8_t alignment, dimension_t hgap, dimension_t vgap);
-
+itk_layout_manager* itk_new_flow_layout(itk_component* container, int8_t alignment, dimension_t hgap, dimension_t vgap)
 {
   itk_layout_manager* rc = malloc(sizeof(itk_layout_manager));
   dimension_t* gap_ = malloc(2 * sizeof(dimension_t));
-  rc->data = malloc(3 * sizeof(void*));
+  int8_t* align_ = malloc(sizeof(int8_t));
+  rc->data = malloc(4 * sizeof(void*));
   rc->prepare        = prepare;
   rc->done           = done;
   rc->locate         = locate;
@@ -201,6 +204,8 @@ itk_layout_manager* itk_new_flow_layout(itk_component* container, int8_t alignme
   GAP_(rc) = gap_;
   HGAP(rc) = hgap;
   VGAP(rc) = vgap;
+  ALIGN_(rc) = align_;
+  ALIGN(rc) = alignment;
   return rc;
 }
 
