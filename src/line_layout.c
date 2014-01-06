@@ -28,12 +28,10 @@
 #define CONTAINER_(layout)  *((void**)(layout->data) + 0)
 #define PREPARED_(layout)   *((void**)(layout->data) + 1)
 #define GAP_(layout)        *((void**)(layout->data) + 2)
-#define BUF_(layout)        *((void**)(layout->data) + 3)
 
 #define CONTAINER(layout)   ((itk_component*)(CONTAINER_(layout)))
 #define PREPARED(layout)    ((itk_hash_table*)(PREPARED_(layout)))
 #define GAP(layout)         *((dimension_t*)(GAP_(layout)))
-#define BUF(layout)         ((rectangle_t*)(BUF_(layout)))
 
 
 /**
@@ -52,7 +50,7 @@
     if ((n = container->children_count))				\
       {									\
 	itk_component** children = container->children;			\
-	rectangle_t* buf = BUF_(this) = malloc(n * sizeof(rectangle_t)); \
+	rectangle_t* buf = alloca(n * sizeof(rectangle_t));		\
 	dimension_t gap = GAP(this);					\
 	dimension_t MINOR = container->size.MINOR;			\
 	dimension_t MAJOR = container->size.MAJOR - gap * (n - 1);	\
@@ -101,7 +99,6 @@
 	  }								\
 	if (REVERSED)							\
 	  {								\
-	    rectangle_t* buf = BUF(this);				\
 	    dimension_t MAJOR = container->size.MAJOR;			\
 	    for (i = 0; i < n; i++)					\
 	      (buf + i)->AXIS = MAJOR - (buf + i)->AXIS - (buf + i)->MAJOR; \
@@ -155,9 +152,6 @@ static void done(__this__)
   if (hash_table)
     itk_free_hash_table(hash_table, false, false);
   PREPARED_(this) = NULL;
-  if (BUF(this))
-    free(BUF_(this));
-  BUF_(this) = NULL;
 }
 
 
@@ -375,8 +369,6 @@ static void free_line_layout(__this__)
   if (hash_table)
     itk_free_hash_table(hash_table, false, false);
   free(GAP_(this));
-  if (BUF(this))
-    free(BUF_(this));
   free(this->data);
   free(this);
 }
@@ -395,7 +387,7 @@ itk_layout_manager* itk_new_line_layout(itk_component* container, int8_t orienta
   dimension_t* gap_ = malloc(sizeof(dimension_t));
   bool_t is_horizontal = orientation < 2;
   bool_t is_reversed = orientation & 1;
-  rc->data = malloc(4 * sizeof(void*));
+  rc->data = malloc(3 * sizeof(void*));
   if (is_reversed)
     rc->prepare      = is_horizontal ? prepare_hr : prepare_vr;
   else
@@ -410,7 +402,6 @@ itk_layout_manager* itk_new_line_layout(itk_component* container, int8_t orienta
   PREPARED_(rc) = NULL;
   GAP_(rc) = gap_;
   GAP(rc) = gap;
-  BUF_(rc) = NULL;
   return rc;
 }
 
