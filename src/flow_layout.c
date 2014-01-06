@@ -197,7 +197,7 @@ itk_layout_manager* itk_new_flow_layout(itk_component* container, int8_t alignme
   rc->locate         = locate;
   rc->minimum_size   = preferred_size;
   rc->preferred_size = preferred_size;
-  rc->maximum_size   = maximum_size;
+  rc->maximum_size   = alignment == ALIGNMENT_JUSTIFY ? maximum_size : preferred_size;
   rc->free = free_line_layout;
   CONTAINER_(rc) = container;
   PREPARED_(rc) = NULL;
