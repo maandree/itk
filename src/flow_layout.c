@@ -87,35 +87,6 @@ static rectangle_t locate(__this__, itk_component* child)
 
 
 /**
- * Calculate the combined advisory minimum size of all components
- * 
- * @return  Advisory minimum size for the container
- */
-static size2_t minimum_size(__this__)
-{
-  itk_component** children = CONTAINER(this)->children;
-  long i, n = CONTAINER(this)->children_count, n_ = 0;
-  size2_t rc, t;
-  rc.width = rc.height = 0;
-  rc.defined = true;
-  for (i = 0; i < n; i++)
-    if ((*(children + i))->visible)
-      {
-	t = (*(children + i))->minimum_size;
-	if (t.width > 0)
-	  rc.width += t.width;
-	if ((rc.height < t.height) && (t.height > 0))
-	  rc.height = t.height;
-      }
-    else
-      n_++;
-  if ((n -= n_))
-    rc.width += HGAP(this) * (n - 1);
-  return rc;
-}
-
-
-/**
  * Calculate the combined advisory maximum size of all components
  * 
  * @return  Advisory maximum size for the container
@@ -221,7 +192,7 @@ itk_layout_manager* itk_new_flow_layout(itk_component* container, int8_t alignme
   rc->prepare        = prepare;
   rc->done           = done;
   rc->locate         = locate;
-  rc->minimum_size   = minimum_size;
+  rc->minimum_size   = preferred_size;
   rc->preferred_size = preferred_size;
   rc->maximum_size   = maximum_size;
   rc->free = free_line_layout;
