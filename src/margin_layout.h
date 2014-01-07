@@ -24,6 +24,15 @@
 
 
 /**
+ * margin_layout is a layout manager similar to stack_layout, but slightly
+ * more powerful. The side of each margin, left, top, right and bottom, can
+ * be configured, independently. The purpose of margin_layout is to make it
+ * less obnoxious, and with lower overhead, to create void space between the
+ * edges of the container and the component.
+ */
+
+
+/**
  * Constructor
  * 
  * @param  container  The container which uses the layout manager
