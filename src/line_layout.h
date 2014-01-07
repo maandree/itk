@@ -24,6 +24,15 @@
 
 
 /**
+ * line_layout is a simple layout manager to components on a line after each
+ * other without ever wrapping. The orientation of the components can be
+ * configured to be either left to right, right to left, top down or bottom
+ * up, with the alignments top left, top right, top left and bottom left,
+ * respectively.
+ */
+
+
+/**
  * Components are added to the right side of the previous component
  */
 #define ORIENTATION_LEFT_TO_RIGHT  0
