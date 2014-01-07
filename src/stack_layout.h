@@ -24,6 +24,14 @@
 
 
 /**
+ * stack_layout is a layout manager that puts components on top of eachother
+ * filling the entire area of the component. The purpose of stack_layout is
+ * to make it simple to to switch change component if viewed when something
+ * happens.
+ */
+
+
+/**
  * Constructor
  * 
  * @param  container  The container which uses the layout manager
