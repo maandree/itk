@@ -24,6 +24,19 @@
 
 
 /**
+ * flow_layout is a layout manager similar to line_layout with left-to-right
+ * orientation. However, the components are wrapped to new row when their
+ * preferred size does not fit the width of the container anymore.
+ * Additionally, the alignment can be configured, other the components can be
+ * lied out as descript (left alignment), or alignmented to the right side of
+ * the component or justified so that the entire width of the container is used
+ * if possible. The latter is always possible except when there is only one
+ * component that has a maximum width, the caps between the components are
+ * increase if neccessary even if it was initially zero.
+ */
+
+
+/**
  * Components are added to the right side of the previous component and are alignmented to the left
  */
 #define ALIGNMENT_LEFT  0
