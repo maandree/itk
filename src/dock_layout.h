@@ -24,6 +24,22 @@
 
 
 /**
+ * dock_layout is a complex layout manager that allows you to dock components
+ * to the edge of the container. If an edge is already used, the new component
+ * is stacked beside the previous. Additionally a component can be set to use
+ * the remaining area, or have an absolute position. Further, components can
+ * yeild, this can be used so that no components uses an entire edge. For
+ * example, if a container has four components docked to left, top, right and
+ * bottom (in that order) first component will occupy its entire left edge
+ * and the two associated corners while the fourth component will occupy no
+ * corners associated with the bottom. But if the first component yeilds one
+ * component anticlockwise, the components will occupy one corner each,
+ * namely the top-left, the top-right, the bottom-right and the bottom-left,
+ * respectively.
+ */
+
+
+/**
  * Constructor
  * 
  * A dock layout can use the following contraints:
@@ -33,7 +49,7 @@
  *     • "bottom" — Dock to bottom edge
  *     • "center" — Fill the centre
  *     • "centre" — Fill the centre (perhaps you perfer nouns)
- *     • An output of `itk_dock_layout_yeild`
+ *     • An output of `itk_dock_layout_yeild` or `itk_dock_layout_absolute`
  * 
  * @param  container  The container which uses the layout manager
  */
