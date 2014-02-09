@@ -135,7 +135,7 @@ itk_hash_table* itk_new_hash_table_fine_tuned(long initial_capacity, float load_
 /**
  * Constructor
  */
-#define itk_new_hash_table() itk_new_hash_table_tuned(11)
+#define itk_new_hash_table() itk_new_hash_table_tuned(16)
 
 /**
  * Destructor
